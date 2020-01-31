@@ -1,0 +1,21 @@
+{
+  "extends": ["standard", "prettier/@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "prettier"],
+  "parser": "@typescript-eslint/parser",
+  "env": {
+    "es6": true
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "project": "./tsconfig.json",
+    "tsconfigRootDir": "."
+  },
+  "rules": {
+    "prettier/prettier": "error",
+    "no-var": "error",
+    "prefer-const": "warn"
+  },
+  "globals": {
+    "trace": true
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "build": {
+    "SRC": "./src",
+    "ASSETS": "./assets"
+  },
+  "include": ["$(MODDABLE)/examples/manifest_base.json", "$(MODDABLE)/examples/manifest_piu.json"],
+  "resources": {
+    "*": ["$(ASSETS)/images/*", "$(ASSETS)/sounds/*", "$(ASSETS)/voices/*"],
+    "*-alpha": ["$(ASSETS)/fonts/*"]
+  },
+  "modules": {
+    "piu/Sound": ["$(MODULES)/piu/MC/piuSound"],
+    "*": ["$(SRC)/*"],
+    "drivers/*": ["$(SRC)/drivers/*"]
+  },
+  "define": {
+    "ili9341": {
+      "inverted": 1
+    }
+  },
+  "creation": {
+    "stack": 512,
+    "static": 65536
+  }
+}

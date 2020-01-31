@@ -1,0 +1,46 @@
+{
+  "name": "m5mouse",
+  "version": "0.1.0",
+  "description": "Micro mouse core module with TypeScript",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/** --ext .ts,.tsx",
+    "lint:fix": "yarn lint --fix",
+    "clean": "rimraf ./build",
+    "build": "npm run clean && tsc && cp -r assets manifest.json build/ && cd build && mcconfig",
+    "debug:linux": "npm run clean && tsc && cp -r assets manifest.json build/ && cd build && mcconfig -d -m -p lin",
+    "debug:m5stack": "npm run clean && tsc && cp -r assets manifest.json build/ && cd build && mcconfig -d -m -p esp32/m5stack",
+    "deploy:linux": "npm run clean && tsc && cp -r assets manifest.json build/ && cd build && mcconfig -m -p lin",
+    "deploy:m5stack": "npm run clean && tsc && cp -r assets manifest.json build/ && cd build && mcconfig -m -p esp32/m5stack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/meganetaaan/m5mouse.git"
+  },
+  "keywords": [
+    "m5stack",
+    "moddable",
+    "micromouse"
+  ],
+  "author": "Shinya Ishikawa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meganetaaan/m5mouse/issues"
+  },
+  "homepage": "https://github.com/meganetaaan/m5mouse#readme",
+  "private": true,
+  "devDependencies": {
+    "@types/moddable": "git+ssh://git@github.com/meganetaaan/types-moddable.git",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^1.19.1",
+    "rimraf": "^2.7.1",
+    "sucrase": "^3.12.1",
+    "typescript": "^3.7.5"
+  }
+}
