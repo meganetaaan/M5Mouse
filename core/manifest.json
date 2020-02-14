@@ -3,7 +3,11 @@
     "SRC": "./src",
     "ASSETS": "./assets"
   },
-  "include": ["$(MODDABLE)/examples/manifest_base.json", "$(MODDABLE)/examples/manifest_piu.json"],
+  "include": [
+    "$(MODDABLE)/examples/manifest_base.json",
+    "$(MODDABLE)/examples/manifest_piu.json",
+    "$(MODDABLE)/modules/pins/i2c/manifest.json"
+  ],
   "resources": {
     "*": ["$(ASSETS)/images/*", "$(ASSETS)/sounds/*", "$(ASSETS)/voices/*"],
     "*-alpha": ["$(ASSETS)/fonts/*"]

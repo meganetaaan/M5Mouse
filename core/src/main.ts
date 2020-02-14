@@ -4,10 +4,12 @@ import Sound from 'piu/Sound'
 import MarqueeLabel from 'marquee-label'
 import Voices from 'voices'
 import Mouse from 'drivers/mouse'
+import Timer from 'timer'
 
 /* global trace */
 declare const global: any
 
+const mouse = new Mouse()
 interface Voice {
   id: string
   balloon: any
@@ -35,7 +37,6 @@ const voiceList: Voice[] = Object.entries(Voices).map(e => {
 })
 let idx = 0
 
-debugger
 const fluid = {
   top: 0,
   right: 0,
@@ -74,24 +75,62 @@ function startSpeech() {
     }
     ap.add(v.balloon)
     ap.content('avatar').delegate('startSpeech')
-    v.sound.play(0, 1, () => {
-      stopSpeech()
-    })
+    v.sound.play(0, 1, stopSpeech)
   }
 }
 
+const commands = [
+  new MarqueeLabel({
+      state: 0,
+      bottom: 10,
+      right: 10,
+      width: 240,
+      height: 40,
+      name: 'balloon',
+      string: '0x00, 0x01, 0x02, 0x03',
+    }),
+  new MarqueeLabel({
+      state: 0,
+      bottom: 10,
+      right: 10,
+      width: 240,
+      height: 40,
+      name: 'balloon',
+      string: '0x01, 0x04, 0x05, 0x06',
+    })
+]
 function stopSpeech() {
   const balloon = ap.content('balloon')
   if (balloon != null) {
     ap.remove(balloon)
-    ap.content('avatar').delegate('stopSpeech')
   }
+  ap.content('avatar').delegate('stopSpeech')
+}
+
+let flag = false
+function changeCommand() {
+  const balloon = ap.content('balloon')
+  if (balloon != null) {
+    ap.remove(balloon)
+  }
+  flag = !flag
+  const b = flag ? commands[0] : commands[1]
+  ap.add(b)
+
+  mouse.sendTestCommand(flag)
+  ap.content('avatar').delegate('startSpeech')
+  Timer.set(stopSpeech, 1000)
 }
 
 if (global.button != null) {
   global.button.a.onChanged = function() {
     if (this.read()) {
       startSpeech()
+    }
+  }
+  global.button.b.onChanged = function() {
+    if (this.read()) {
+      changeCommand()
     }
   }
 }

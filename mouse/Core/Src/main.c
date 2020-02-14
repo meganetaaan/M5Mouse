@@ -21,10 +21,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "i2c.h"
 #include "rtc.h"
 #include "tim.h"
 #include "usb_device.h"
-#include "usbd_cdc_if.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -49,6 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+// extern void initialise_monitor_handles(void);
 
 /* USER CODE END PV */
 
@@ -56,29 +57,31 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-int16_t get_encoder_value( void )
+int16_t get_encoder_value(void)
 {
   uint16_t enc_buff = TIM1->CNT;
 
-  if( enc_buff > 32767 ){
+  if (enc_buff > 32767)
+  {
     return (int16_t)enc_buff * -1;
-  } else {
+  }
+  else
+  {
     return (int16_t)enc_buff;
   }
 }
 
-void reset_encoder_count( void )
+void reset_encoder_count(void)
 {
   TIM1->CNT = 0;
 }
 
-int16_t count_encoder( void )
+int16_t count_encoder(void)
 {
   int16_t count = get_encoder_value();
   reset_encoder_count();
   return count;
 }
-
 
 /* USER CODE END PFP */
 
@@ -94,6 +97,8 @@ int16_t count_encoder( void )
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  // initialise_monitor_handles();
+
   char usr_buf[1000];
   sprintf(usr_buf, "Hello World\n\r");
 
@@ -124,9 +129,12 @@ int main(void)
   MX_ADC2_Init();
   MX_USB_DEVICE_Init();
   MX_TIM1_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   uint16_t uhADCxConvertedValue = 0;
+  uint8_t aRxBuffer[40] = {0};
+  uint16_t delay = 0;
 
   // Turn on LED
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
@@ -139,7 +147,7 @@ int main(void)
   }
 
   // Start Encoder
-  HAL_TIM_Encoder_Start( &htim1, TIM_CHANNEL_ALL ); // encoder start
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL); // encoder start
 
   /* USER CODE END 2 */
 
@@ -148,6 +156,13 @@ int main(void)
   while (1)
   {
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
+/*
+    while (HAL_I2C_Slave_Receive(&hi2c1, (uint8_t *)aRxBuffer, 4, 1000) != HAL_OK)
+    {
+      // wait for receive
+    }
+    */
 
     // ADC
     HAL_StatusTypeDef status = HAL_ADC_PollForConversion(&hadc2, 1000);
@@ -161,18 +176,20 @@ int main(void)
     {
       /* ADC conversion completed */
       /*##-5- Get the converted value of regular channel  ######################*/
-      
+
       uhADCxConvertedValue = HAL_ADC_GetValue(&hadc2);
-      // sprintf(usr_buf, "Sensor: %d\n\r", uhADCxConvertedValue);
+      sprintf(usr_buf, "Sensor: %d\n\r", uhADCxConvertedValue);
+      delay = uhADCxConvertedValue >> 1;
       // CDC_Transmit_FS((uint8_t *)usr_buf, strlen(usr_buf));
     }
 
     // Encoder
-    count += count_encoder();
-    sprintf(usr_buf, "Encoder: %d\n\r", count);
+    // count += count_encoder();
+    // sprintf(usr_buf, "Encoder: %d\n\r", count);
+    // sprintf(usr_buf, "I2C Address: %d, Data: %d, %d, %d\n\r", aRxBuffer[0], aRxBuffer[1], aRxBuffer[2], aRxBuffer[3]);
 
     CDC_Transmit_FS((uint8_t *)usr_buf, strlen(usr_buf));
-    HAL_Delay(100);
+    HAL_Delay(100 + delay);
 
     /* USER CODE END WHILE */
 
