@@ -11,6 +11,7 @@ type RegistoryKey =
   | 'READ_SENSOR_R'
   | 'WRITE_MOTOR_V_L'
   | 'WRITE_MOTOR_V_R'
+  | 'WHO_AM_I'
 type EncoderPosition = 'LEFT' | 'RIGHT'
 type SensorPosition = 'LEFT' | 'FRONT_LEFT' | 'FRONT_RIGHT' | 'RIGHT'
 const DEFAULT_ADDRESS = 0x64 // June 4th is the Mouse Day
@@ -27,6 +28,7 @@ const REGISTORY: { [key in RegistoryKey]: number } = {
   READ_SENSOR_R: 0x23,
   WRITE_MOTOR_V_L: 0x30,
   WRITE_MOTOR_V_R: 0x31,
+  WHO_AM_I: 0x68
 }
 
 interface ConstructorParam extends I2C.ConstructorParam {
@@ -35,26 +37,27 @@ interface ConstructorParam extends I2C.ConstructorParam {
 
 export default class Mouse {
   private i2c: I2C
-  private buf: Uint8Array
+  private u8a: Uint8Array
   constructor(param: ConstructorParam = { address: DEFAULT_ADDRESS }) {
     this.i2c = new I2C(param)
-    this.buf = new Uint8Array(40)
+    this.u8a = new Uint8Array(40)
     this.initialize()
   }
   private readByte(register: number): number {
+    const buf = this.u8a.buffer
     this.i2c.write(register)
-    this.i2c.read(1, this.buf)
-    return this.buf[0]
+    this.i2c.read(1, buf)
+    return this.u8a[0]
   }
   private readWord(register: number, endian: boolean = true): number {
-    const buf = this.buf
+    const u8a = this.u8a
     this.i2c.write(register)
-    this.i2c.read(2, buf)
-    return endian ? buf[1] | (buf[0] << 8) : buf[0] | (buf[1] << 8)
+    this.i2c.read(2, u8a.buffer)
+    return endian ? u8a[1] | (u8a[0] << 8) : u8a[0] | (u8a[1] << 8)
   }
   private readBlock(register: number, count: number) {
     this.i2c.write(register)
-    this.i2c.read(count, this.buf)
+    this.i2c.read(count, this.u8a.buffer)
   }
   private writeByte(register: number, value: any): void {
     return this.i2c.write(register, value & 255)
@@ -107,9 +110,7 @@ export default class Mouse {
     }
   }
 
-  public sendTestCommand(flag: boolean): void {
-    return flag
-      ? this.writeBlock(REGISTORY.POWER_ON, ...[0x01, 0x02, 0x03])
-      : this.writeBlock(REGISTORY.POWER_OFF, ...[0x04, 0x05, 0x06])
+  public whoami(flag: boolean): number {
+    return this.readByte(REGISTORY.WHO_AM_I)
   }
 }

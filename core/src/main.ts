@@ -79,26 +79,7 @@ function startSpeech() {
   }
 }
 
-const commands = [
-  new MarqueeLabel({
-      state: 0,
-      bottom: 10,
-      right: 10,
-      width: 240,
-      height: 40,
-      name: 'balloon',
-      string: '0x00, 0x01, 0x02, 0x03',
-    }),
-  new MarqueeLabel({
-      state: 0,
-      bottom: 10,
-      right: 10,
-      width: 240,
-      height: 40,
-      name: 'balloon',
-      string: '0x01, 0x04, 0x05, 0x06',
-    })
-]
+
 function stopSpeech() {
   const balloon = ap.content('balloon')
   if (balloon != null) {
@@ -113,11 +94,23 @@ function changeCommand() {
   if (balloon != null) {
     ap.remove(balloon)
   }
+  /*
   flag = !flag
   const b = flag ? commands[0] : commands[1]
   ap.add(b)
+  */
 
-  mouse.sendTestCommand(flag)
+  const str = mouse.whoami(flag)
+  const b = new MarqueeLabel({
+    state: 0,
+    bottom: 10,
+    right: 10,
+    width: 240,
+    height: 40,
+    name: 'balloon',
+    string: `デバイスID: ${str}`
+  })
+  ap.add(b)
   ap.content('avatar').delegate('startSpeech')
   Timer.set(stopSpeech, 1000)
 }
