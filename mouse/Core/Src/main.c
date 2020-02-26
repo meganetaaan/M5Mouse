@@ -50,6 +50,19 @@
 
 /* USER CODE BEGIN PV */
 // extern void initialise_monitor_handles(void);
+#define COMMAND_POWER_ON 0x00
+#define COMMAND_POWER_OFF 0x01
+#define COMMAND_READ_ENCODER_L 0x10
+#define COMMAND_READ_ENCODER_R 0x11
+#define COMMAND_READ_SENSOR_L 0x20
+#define COMMAND_READ_SENSOR_FL 0x21
+#define COMMAND_READ_SENSOR_FR 0x22
+#define COMMAND_READ_SENSOR_R 0x23
+#define COMMAND_WRITE_MOTOR_V_L 0x30
+#define COMMAND_WRITE_MOTOR_V_R 0x31
+#define COMMAND_WHO_AM_I 0x68
+
+#define WHO_AM_I 0x01
 
 /* USER CODE END PV */
 
@@ -83,6 +96,12 @@ int16_t count_encoder(void)
   return count;
 }
 
+void set_pwm(uint8_t channel, uint8_t direction, uint16_t pwm) {
+  int dir = direction > 0 ? GPIO_PIN_SET : GPIO_PIN_RESET;
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6|GPIO_PIN_7, dir);
+  __HAL_TIM_SET_COMPARE(&htim2, channel, pwm);
+}
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -102,10 +121,8 @@ int main(void)
   char usr_buf[1000];
   sprintf(usr_buf, "Hello World\n\r");
 
-  int16_t count = 0;
-
   /* USER CODE END 1 */
-  
+
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -130,11 +147,14 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM1_Init();
   MX_I2C1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
   uint16_t uhADCxConvertedValue = 0;
-  uint8_t aRxBuffer[40] = {0};
+  uint8_t commandBuffer[4] = {0};
   uint16_t delay = 0;
+  uint8_t whoami[1] = {WHO_AM_I};
+  uint8_t status = 0;
 
   // Turn on LED
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
@@ -147,7 +167,10 @@ int main(void)
   }
 
   // Start Encoder
-  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL); // encoder start
+  if (HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL) != HAL_OK) {
+    Error_Handler();
+  } // encoder start
+
 
   /* USER CODE END 2 */
 
@@ -155,16 +178,46 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    if (HAL_I2C_Slave_Receive(&hi2c1, (uint8_t *)commandBuffer, 1, 1000) == HAL_OK) {
+      switch(commandBuffer[0]) {
+        case COMMAND_WHO_AM_I:
+          status = HAL_I2C_Slave_Transmit(&hi2c1, (uint8_t *)whoami, 1, 1000);
+          sprintf(usr_buf, "Send whoami: %d\n\r", status);
+          break;
+        default:
+        ; // Do nothing
+      }
+    }
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
-/*
-    while (HAL_I2C_Slave_Receive(&hi2c1, (uint8_t *)aRxBuffer, 4, 1000) != HAL_OK)
-    {
-      // wait for receive
+    set_pwm(TIM_CHANNEL_1, 1, 100);
+    set_pwm(TIM_CHANNEL_2, 1, 999);
+    if (HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1) != HAL_OK) {
+      Error_Handler();
     }
-    */
+    if (HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2) != HAL_OK) {
+      Error_Handler();
+    }
+    HAL_Delay(3000);
 
+    set_pwm(TIM_CHANNEL_1, 1, 500);
+    set_pwm(TIM_CHANNEL_2, 1, 500);
+    HAL_Delay(3000);
+
+    set_pwm(TIM_CHANNEL_1, 1, 999);
+    set_pwm(TIM_CHANNEL_2, 1, 100);
+    HAL_Delay(3000);
+
+    if (HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1) != HAL_OK) {
+      Error_Handler();
+    }
+    if (HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2) != HAL_OK) {
+      Error_Handler();
+    }
     // ADC
+    /*
     HAL_StatusTypeDef status = HAL_ADC_PollForConversion(&hadc2, 1000);
     if (status != HAL_OK)
     {
@@ -174,22 +227,21 @@ int main(void)
     }
     else
     {
-      /* ADC conversion completed */
-      /*##-5- Get the converted value of regular channel  ######################*/
 
       uhADCxConvertedValue = HAL_ADC_GetValue(&hadc2);
       sprintf(usr_buf, "Sensor: %d\n\r", uhADCxConvertedValue);
       delay = uhADCxConvertedValue >> 1;
       // CDC_Transmit_FS((uint8_t *)usr_buf, strlen(usr_buf));
     }
+    */
 
     // Encoder
     // count += count_encoder();
     // sprintf(usr_buf, "Encoder: %d\n\r", count);
-    // sprintf(usr_buf, "I2C Address: %d, Data: %d, %d, %d\n\r", aRxBuffer[0], aRxBuffer[1], aRxBuffer[2], aRxBuffer[3]);
+    // sprintf(usr_buf, "I2C Address: %d, Data: %d, %d, %d\n\r", commandBuffer[0], commandBuffer[1], commandBuffer[2], commandBuffer[3]);
 
     CDC_Transmit_FS((uint8_t *)usr_buf, strlen(usr_buf));
-    HAL_Delay(100 + delay);
+    HAL_Delay(100);
 
     /* USER CODE END WHILE */
 
@@ -208,7 +260,7 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -222,7 +274,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -271,7 +323,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
