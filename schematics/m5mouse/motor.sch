@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 3
+Sheet 2 4
 Title ""
 Date ""
 Rev ""
@@ -13,4 +13,141 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+$Comp
+L rt-lib:DRV8835 U?
+U 1 1 5EFE65CE
+P 5850 4050
+F 0 "U?" H 5850 4519 47  0000 C CNN
+F 1 "DRV8835" H 5850 4432 47  0000 C CNN
+F 2 "" H 7450 2850 47  0001 C CNN
+F 3 "" H 7450 2850 47  0001 C CNN
+	1    5850 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5EFE6D60
+P 5200 4550
+F 0 "#PWR?" H 5200 4300 50  0001 C CNN
+F 1 "GND" H 5205 4377 50  0000 C CNN
+F 2 "" H 5200 4550 50  0001 C CNN
+F 3 "" H 5200 4550 50  0001 C CNN
+	1    5200 4550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 4300 5200 4550
+$Comp
+L power:+7.5V #PWR?
+U 1 1 5EFE740D
+P 4700 3250
+F 0 "#PWR?" H 4700 3100 50  0001 C CNN
+F 1 "+7.5V" H 4715 3423 50  0000 C CNN
+F 2 "" H 4700 3250 50  0001 C CNN
+F 3 "" H 4700 3250 50  0001 C CNN
+	1    4700 3250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4700 3250 4900 3250
+$Comp
+L power:+3.3V #PWR?
+U 1 1 5EFE8442
+P 6950 3250
+F 0 "#PWR?" H 6950 3100 50  0001 C CNN
+F 1 "+3.3V" H 6965 3423 50  0000 C CNN
+F 2 "" H 6950 3250 50  0001 C CNN
+F 3 "" H 6950 3250 50  0001 C CNN
+	1    6950 3250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6500 3250 6600 3250
+$Comp
+L power:GND #PWR?
+U 1 1 5EFE92F5
+P 6750 3600
+F 0 "#PWR?" H 6750 3350 50  0001 C CNN
+F 1 "GND" H 6755 3427 50  0000 C CNN
+F 2 "" H 6750 3600 50  0001 C CNN
+F 3 "" H 6750 3600 50  0001 C CNN
+	1    6750 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 5EFE9A2B
+P 6750 3400
+F 0 "C?" H 6865 3446 50  0000 L CNN
+F 1 "0.1u" H 6865 3355 50  0000 L CNN
+F 2 "" H 6788 3250 50  0001 C CNN
+F 3 "~" H 6750 3400 50  0001 C CNN
+	1    6750 3400
+	1    0    0    -1  
+$EndComp
+Connection ~ 6750 3250
+Wire Wire Line
+	6750 3250 6950 3250
+Wire Wire Line
+	6500 3250 6500 3800
+Wire Wire Line
+	6750 3550 6750 3600
+$Comp
+L power:GND #PWR?
+U 1 1 5EFEFE11
+P 4900 3600
+F 0 "#PWR?" H 4900 3350 50  0001 C CNN
+F 1 "GND" H 4905 3427 50  0000 C CNN
+F 2 "" H 4900 3600 50  0001 C CNN
+F 3 "" H 4900 3600 50  0001 C CNN
+	1    4900 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 5EFEFE17
+P 4900 3400
+F 0 "C?" H 5015 3446 50  0000 L CNN
+F 1 "0.1u" H 5015 3355 50  0000 L CNN
+F 2 "" H 4938 3250 50  0001 C CNN
+F 3 "~" H 4900 3400 50  0001 C CNN
+	1    4900 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4900 3550 4900 3600
+Connection ~ 4900 3250
+Wire Wire Line
+	5200 3250 5200 3800
+Wire Wire Line
+	4900 3250 5200 3250
+$Comp
+L Connector_Generic:Conn_02x03_Odd_Even J?
+U 1 1 5EFFAED6
+P 5800 5600
+F 0 "J?" H 5850 5917 50  0000 C CNN
+F 1 "Conn_02x03_Odd_Even" H 5850 5826 50  0000 C CNN
+F 2 "" H 5800 5600 50  0001 C CNN
+F 3 "~" H 5800 5600 50  0001 C CNN
+	1    5800 5600
+	1    0    0    -1  
+$EndComp
+Text GLabel 7150 4100 2    50   Input ~ 0
+EN
+Wire Wire Line
+	7150 4100 7000 4100
+Wire Wire Line
+	7000 4100 6500 4100
+Wire Wire Line
+	7000 4100 7000 4300
+Wire Wire Line
+	7000 4300 6500 4300
+Connection ~ 7000 4100
+Wire Wire Line
+	6500 3900 6600 3900
+Wire Wire Line
+	6600 3900 6600 3250
+Connection ~ 6600 3250
+Wire Wire Line
+	6600 3250 6750 3250
 $EndSCHEMATC
