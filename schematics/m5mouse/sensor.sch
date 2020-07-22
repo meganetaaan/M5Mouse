@@ -135,7 +135,7 @@ F 3 "~" H 3550 3400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1200 2650 1200 2950
+	1200 2650 1200 2750
 Wire Wire Line
 	1200 3600 1200 4550
 $Comp
@@ -540,4 +540,24 @@ Text HLabel 9050 4100 0    50   Input ~ 0
 IRLED_R
 Text HLabel 10300 3850 0    50   Input ~ 0
 AN_IRLED_R
+Text Notes 2750 3600 0    50   ~ 0
+100mA
+$Comp
+L power:PWR_FLAG #FLG0105
+U 1 1 5F1AE690
+P 1650 2650
+F 0 "#FLG0105" H 1650 2725 50  0001 C CNN
+F 1 "PWR_FLAG" H 1650 2823 50  0000 C CNN
+F 2 "" H 1650 2650 50  0001 C CNN
+F 3 "~" H 1650 2650 50  0001 C CNN
+	1    1650 2650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1650 2650 1650 2750
+Wire Wire Line
+	1650 2750 1200 2750
+Connection ~ 1200 2750
+Wire Wire Line
+	1200 2750 1200 2950
 $EndSCHEMATC
