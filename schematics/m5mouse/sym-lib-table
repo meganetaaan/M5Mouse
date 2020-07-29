@@ -1,3 +1,4 @@
 (sym_lib_table
   (lib (name rt-lib)(type Legacy)(uri /work/ghq/git.moon-rabbit.rt-net.jp/public_resourse/RT_KICAD_LIB/RT_Parts.lib)(options "")(descr ""))
+  (lib (name SamacSys_Parts)(type Legacy)(uri ${KIPRJMOD}/lib/SamacSys_Parts.lib)(options "")(descr ""))
 )
