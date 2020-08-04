@@ -1,0 +1,47 @@
+ERC report (2020年06月25日 10時49分06秒, Encoding UTF8 )
+
+***** Sheet /
+ErrType(3): Pin connected to other pins, but not driven by any pin
+    @(312.42 mm, 186.69 mm): Pin 1 (Power input) of component #PWR0105 is not driven (Net 4).
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(294.64 mm, 101.60 mm): Pin 60 (Input) of component U2 is unconnected.
+ErrType(8): Global label not connected to any other global label
+    @(288.29 mm, 101.60 mm): Global label BOOT is not connected to any other global label.
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(330.20 mm, 154.94 mm): Pin 58 (Bidirectional) of component U2 is unconnected.
+ErrType(8): Global label not connected to any other global label
+    @(336.55 mm, 154.94 mm): Global label USART3_RX is not connected to any other global label.
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(330.20 mm, 157.48 mm): Pin 59 (Bidirectional) of component U2 is unconnected.
+ErrType(8): Global label not connected to any other global label
+    @(336.55 mm, 157.48 mm): Global label USART3_TX is not connected to any other global label.
+ErrType(3): Pin connected to other pins, but not driven by any pin
+    @(152.40 mm, 152.40 mm): Pin 1 (Power input) of component #PWR0112 is not driven (Net 19).
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(294.64 mm, 172.72 mm): Pin 2 (Bidirectional) of component U2 is unconnected.
+ErrType(8): Global label not connected to any other global label
+    @(288.29 mm, 172.72 mm): Global label GPIO1 is not connected to any other global label.
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(173.99 mm, 102.87 mm): Pin 6 (Passive) of component J3 is unconnected.
+ErrType(8): Global label not connected to any other global label
+    @(181.61 mm, 102.87 mm): Global label SWO is not connected to any other global label.
+ErrType(7): A pin with a "no connection" flag is connected
+    @(330.20 mm, 162.56 mm): More than 1 pin connected to an UnConnect symbol.
+ErrType(7): A pin with a "no connection" flag is connected
+    @(330.20 mm, 160.02 mm): More than 1 pin connected to an UnConnect symbol.
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(294.64 mm, 109.22 mm): Pin 47 (Power input) of component U2 is unconnected.
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(294.64 mm, 106.68 mm): Pin 31 (Power input) of component U2 is unconnected.
+ErrType(3): Pin connected to other pins, but not driven by any pin
+    @(320.04 mm, 91.44 mm): Pin 13 (Power input) of component U2 is not driven (Net 91).
+
+***** Sheet /Sensor_Module/
+
+***** Sheet /Motor_Module/
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(39.37 mm, 62.23 mm): Pin 5 (Output) of component U3 is unconnected.
+ErrType(2): Pin not connected (use a "no connection" flag to suppress this error)
+    @(39.37 mm, 59.69 mm): Pin 4 (Output) of component U3 is unconnected.
+
+ ** ERC messages: 19  Errors 0  Warnings 19
