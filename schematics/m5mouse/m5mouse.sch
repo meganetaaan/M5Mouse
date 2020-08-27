@@ -30,7 +30,7 @@ U 1 1 5E992AB6
 P 1350 4650
 F 0 "J1" H 1430 4642 50  0000 L CNN
 F 1 "Conn_01x02" H 1430 4551 50  0000 L CNN
-F 2 "Connector_JST:JST_EH_B2B-EH-A_1x02_P2.50mm_Vertical" H 1350 4650 50  0001 C CNN
+F 2 "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" H 1350 4650 50  0001 C CNN
 F 3 "~" H 1350 4650 50  0001 C CNN
 	1    1350 4650
 	-1   0    0    -1  
@@ -4763,10 +4763,6 @@ SPI1_SCK
 Text GLabel 13250 4200 2    50   Output ~ 0
 GPIO11
 NoConn ~ 13000 5300
-Text GLabel 11350 6600 0    50   Output ~ 0
-GPIO11
-Wire Wire Line
-	11350 6600 11600 6600
 Text GLabel 11350 6700 0    50   Output ~ 0
 SPI1_CS
 Wire Wire Line
@@ -4897,4 +4893,5 @@ Wire Wire Line
 	8200 2700 9900 2700
 Wire Wire Line
 	14200 3600 15000 3600
+NoConn ~ 11600 6600
 $EndSCHEMATC
