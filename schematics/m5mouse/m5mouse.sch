@@ -4763,10 +4763,6 @@ SPI1_SCK
 Text GLabel 13250 4200 2    50   Output ~ 0
 GPIO11
 NoConn ~ 13000 5300
-Text GLabel 11350 6600 0    50   Output ~ 0
-GPIO11
-Wire Wire Line
-	11350 6600 11600 6600
 Text GLabel 11350 6700 0    50   Output ~ 0
 SPI1_CS
 Wire Wire Line
@@ -4897,4 +4893,5 @@ Wire Wire Line
 	8200 2700 9900 2700
 Wire Wire Line
 	14200 3600 15000 3600
+NoConn ~ 11600 6600
 $EndSCHEMATC
