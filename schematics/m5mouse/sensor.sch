@@ -115,7 +115,7 @@ U 1 1 5F051C61
 P 3150 3400
 F 0 "D2" V 3200 3800 50  0000 R CNN
 F 1 "SFH4550" V 3100 3800 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 3150 3400 50  0001 C CNN
+F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 3150 3400 50  0001 C CNN
 F 3 "~" H 3150 3400 50  0001 C CNN
 	1    3150 3400
 	0    -1   -1   0   
@@ -126,7 +126,7 @@ U 1 1 5F050E80
 P 3550 3400
 F 0 "Q2" H 3740 3446 50  0000 L CNN
 F 1 "ST-1KL3A" H 3740 3355 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 3750 3500 50  0001 C CNN
+F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 3750 3500 50  0001 C CNN
 F 3 "~" H 3550 3400 50  0001 C CNN
 	1    3550 3400
 	1    0    0    -1  
@@ -282,7 +282,7 @@ U 1 1 5EF7C15C
 P 5300 3400
 F 0 "D3" V 5350 3800 50  0000 R CNN
 F 1 "SFH4550" V 5250 3800 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 5300 3400 50  0001 C CNN
+F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 5300 3400 50  0001 C CNN
 F 3 "~" H 5300 3400 50  0001 C CNN
 	1    5300 3400
 	0    -1   -1   0   
@@ -293,7 +293,7 @@ U 1 1 5EF7C162
 P 5700 3400
 F 0 "Q4" H 5890 3446 50  0000 L CNN
 F 1 "ST-1KL3A" H 5890 3355 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 5900 3500 50  0001 C CNN
+F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 5900 3500 50  0001 C CNN
 F 3 "~" H 5700 3400 50  0001 C CNN
 	1    5700 3400
 	1    0    0    -1  
@@ -381,7 +381,7 @@ U 1 1 5EF81F3E
 P 7450 3400
 F 0 "D4" V 7500 3800 50  0000 R CNN
 F 1 "SFH4550" V 7400 3800 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 7450 3400 50  0001 C CNN
+F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 7450 3400 50  0001 C CNN
 F 3 "~" H 7450 3400 50  0001 C CNN
 	1    7450 3400
 	0    -1   -1   0   
@@ -392,7 +392,7 @@ U 1 1 5EF81F44
 P 7850 3400
 F 0 "Q6" H 8040 3446 50  0000 L CNN
 F 1 "ST-1KL3A" H 8040 3355 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 8050 3500 50  0001 C CNN
+F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 8050 3500 50  0001 C CNN
 F 3 "~" H 7850 3400 50  0001 C CNN
 	1    7850 3400
 	1    0    0    -1  
@@ -478,7 +478,7 @@ U 1 1 5EF882B5
 P 9600 3400
 F 0 "D5" V 9650 3800 50  0000 R CNN
 F 1 "SFH4550" V 9550 3800 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 9600 3400 50  0001 C CNN
+F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 9600 3400 50  0001 C CNN
 F 3 "~" H 9600 3400 50  0001 C CNN
 	1    9600 3400
 	0    -1   -1   0   
@@ -489,7 +489,7 @@ U 1 1 5EF882BB
 P 10000 3400
 F 0 "Q8" H 10190 3446 50  0000 L CNN
 F 1 "ST-1KL3A" H 10190 3355 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 10200 3500 50  0001 C CNN
+F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 10200 3500 50  0001 C CNN
 F 3 "~" H 10000 3400 50  0001 C CNN
 	1    10000 3400
 	1    0    0    -1  
