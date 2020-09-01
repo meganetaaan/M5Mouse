@@ -1,3 +1,4 @@
 (fp_lib_table
   (lib (name m5mouse)(type KiCad)(uri ${KIPRJMOD}/m5mouse.pretty)(options "")(descr ""))
+  (lib (name mod)(type KiCad)(uri /work/ghq/git.moon-rabbit.rt-net.jp/public_resourse/RT_KICAD_LIB/mod)(options "")(descr ""))
 )
