@@ -4662,7 +4662,7 @@ F4 "NCS" I L 13400 7950 50
 F5 "SCLK" I L 13400 8100 50 
 F6 "INT" I R 14450 7950 50 
 $EndSheet
-Text GLabel 13000 8250 0    50   Input ~ 0
+Text GLabel 13000 8250 0    50   Output ~ 0
 SPI1_MISO
 Text GLabel 13000 8400 0    50   Input ~ 0
 SPI1_MOSI
@@ -4682,7 +4682,7 @@ Text GLabel 14800 7950 2    50   Input ~ 0
 GPIO11
 Wire Wire Line
 	14450 7950 14800 7950
-Text GLabel 13250 5900 2    50   Output ~ 0
+Text GLabel 13250 5900 2    50   Input ~ 0
 SPI1_MISO
 Text GLabel 13250 6000 2    50   Output ~ 0
 SPI1_MOSI
