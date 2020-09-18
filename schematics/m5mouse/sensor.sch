@@ -51,6 +51,8 @@ F 0 "R7" H 4120 4346 50  0000 L CNN
 F 1 "1k" H 4120 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 3980 4300 50  0001 C CNN
 F 3 "~" H 4050 4300 50  0001 C CNN
+F 4 "RC0603FR-071KL" H 4050 4300 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-071KL/311-1-00KHRCT-ND/729790" H 4050 4300 50  0001 C CNN "URL"
 	1    4050 4300
 	1    0    0    -1  
 $EndComp
@@ -77,6 +79,8 @@ F 0 "R6" H 2820 4346 50  0000 L CNN
 F 1 "10k" H 2820 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 2680 4300 50  0001 C CNN
 F 3 "~" H 2750 4300 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-0710KL/311-10-0KHRCT-ND/729827" H 2750 4300 50  0001 C CNN "URL"
+F 5 "RC0603FR-0710KL" H 2750 4300 50  0001 C CNN "Manf#"
 	1    2750 4300
 	1    0    0    -1  
 $EndComp
@@ -95,6 +99,8 @@ F 0 "Q1" H 3254 4146 50  0000 L CNN
 F 1 "BSS138" H 3254 4055 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 3250 4025 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/BS/BSS138.pdf" H 3050 4100 50  0001 L CNN
+F 4 "https://www.digikey.jp/product-detail/ja/on-semiconductor/BSS138/BSS138CT-ND/244294" H 3050 4100 50  0001 C CNN "URL"
+F 5 "BSS138" H 3050 4100 50  0001 C CNN "Manf#"
 	1    3050 4100
 	1    0    0    -1  
 $EndComp
@@ -106,6 +112,8 @@ F 0 "D2" V 3200 3800 50  0000 R CNN
 F 1 "SFH4550" V 3100 3800 50  0000 R CNN
 F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 3150 3400 50  0001 C CNN
 F 3 "~" H 3150 3400 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/osram-opto-semiconductors-inc/SFH-4550/475-1200-ND/806365" V 3150 3400 50  0001 C CNN "URL"
+F 5 "SFH 4550" V 3150 3400 50  0001 C CNN "Manf#"
 	1    3150 3400
 	0    -1   -1   0   
 $EndComp
@@ -117,6 +125,8 @@ F 0 "Q2" H 3740 3446 50  0000 L CNN
 F 1 "ST-1KL3A" H 3740 3355 50  0000 L CNN
 F 2 "m5mouse:ThroughHole_1x02_P2.54_Vertical" H 3750 3500 50  0001 C CNN
 F 3 "~" H 3550 3400 50  0001 C CNN
+F 4 "https://www.rt-shop.jp/index.php?main_page=product_info&products_id=2746" H 3550 3400 50  0001 C CNN "URL"
+F 5 "ST-1KL3A" H 3550 3400 50  0001 C CNN "Manf#"
 	1    3550 3400
 	1    0    0    -1  
 $EndComp
@@ -152,6 +162,8 @@ F 0 "C19" H 2165 3496 50  0000 L CNN
 F 1 "10u" H 2165 3405 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0402_1005Metric" H 2088 3300 50  0001 C CNN
 F 3 "~" H 2050 3450 50  0001 C CNN
+F 4 "GRM155C80J106ME11D" H 2050 3450 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/murata-electronics/GRM155C80J106ME11D/490-13233-1-ND/5877441" H 2050 3450 50  0001 C CNN "URL"
 	1    2050 3450
 	1    0    0    -1  
 $EndComp
@@ -163,6 +175,8 @@ F 0 "R5" V 1750 3100 50  0000 C CNN
 F 1 "33" V 1650 3100 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 1580 3100 50  0001 C CNN
 F 3 "~" H 1650 3100 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-0733RL/311-33-0HRCT-ND/730105" V 1650 3100 50  0001 C CNN "URL"
+F 5 "RC0603FR-0733RL" V 1650 3100 50  0001 C CNN "Manf#"
 	1    1650 3100
 	0    1    1    0   
 $EndComp
@@ -174,6 +188,8 @@ F 0 "C18" H 1315 3496 50  0000 L CNN
 F 1 "10u" H 1315 3405 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0402_1005Metric" H 1238 3300 50  0001 C CNN
 F 3 "~" H 1200 3450 50  0001 C CNN
+F 4 "GRM155C80J106ME11D" H 1200 3450 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/murata-electronics/GRM155C80J106ME11D/490-13233-1-ND/5877441" H 1200 3450 50  0001 C CNN "URL"
 	1    1200 3450
 	1    0    0    -1  
 $EndComp
@@ -218,6 +234,8 @@ F 0 "R9" H 6270 4346 50  0000 L CNN
 F 1 "1k" H 6270 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 6130 4300 50  0001 C CNN
 F 3 "~" H 6200 4300 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-071KL/311-1-00KHRCT-ND/729790" H 6200 4300 50  0001 C CNN "URL"
+F 5 "RC0603FR-071KL" H 6200 4300 50  0001 C CNN "Manf#"
 	1    6200 4300
 	1    0    0    -1  
 $EndComp
@@ -233,6 +251,8 @@ F 0 "R8" H 4970 4346 50  0000 L CNN
 F 1 "10k" H 4970 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 4830 4300 50  0001 C CNN
 F 3 "~" H 4900 4300 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-0710KL/311-10-0KHRCT-ND/729827" H 4900 4300 50  0001 C CNN "URL"
+F 5 "RC0603FR-0710KL" H 4900 4300 50  0001 C CNN "Manf#"
 	1    4900 4300
 	1    0    0    -1  
 $EndComp
@@ -306,6 +326,8 @@ F 0 "R11" H 8420 4346 50  0000 L CNN
 F 1 "1k" H 8420 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 8280 4300 50  0001 C CNN
 F 3 "~" H 8350 4300 50  0001 C CNN
+F 4 "RC0603FR-071KL" H 8350 4300 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-071KL/311-1-00KHRCT-ND/729790" H 8350 4300 50  0001 C CNN "URL"
 	1    8350 4300
 	1    0    0    -1  
 $EndComp
@@ -321,6 +343,8 @@ F 0 "R10" H 7120 4346 50  0000 L CNN
 F 1 "10k" H 7120 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 6980 4300 50  0001 C CNN
 F 3 "~" H 7050 4300 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-0710KL/311-10-0KHRCT-ND/729827" H 7050 4300 50  0001 C CNN "URL"
+F 5 "RC0603FR-0710KL" H 7050 4300 50  0001 C CNN "Manf#"
 	1    7050 4300
 	1    0    0    -1  
 $EndComp
@@ -392,6 +416,8 @@ F 0 "R13" H 10570 4346 50  0000 L CNN
 F 1 "1k" H 10570 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 10430 4300 50  0001 C CNN
 F 3 "~" H 10500 4300 50  0001 C CNN
+F 4 "RC0603FR-071KL" H 10500 4300 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-071KL/311-1-00KHRCT-ND/729790" H 10500 4300 50  0001 C CNN "URL"
 	1    10500 4300
 	1    0    0    -1  
 $EndComp
@@ -407,6 +433,8 @@ F 0 "R12" H 9270 4346 50  0000 L CNN
 F 1 "10k" H 9270 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 9130 4300 50  0001 C CNN
 F 3 "~" H 9200 4300 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/yageo/RC0603FR-0710KL/311-10-0KHRCT-ND/729827" H 9200 4300 50  0001 C CNN "URL"
+F 5 "RC0603FR-0710KL" H 9200 4300 50  0001 C CNN "Manf#"
 	1    9200 4300
 	1    0    0    -1  
 $EndComp

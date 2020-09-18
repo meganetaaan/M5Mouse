@@ -21,6 +21,8 @@ F 0 "U3" H 3100 4519 47  0000 C CNN
 F 1 "DRV8835" H 3100 4432 47  0000 C CNN
 F 2 "Package_SON:WSON-12-1EP_3x2mm_P0.5mm_EP1x2.65" H 4700 2850 47  0001 C CNN
 F 3 "" H 4700 2850 47  0001 C CNN
+F 4 "DRV8835DSSR" H 3100 4050 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/texas-instruments/DRV8835DSSR/296-30391-1-ND/3188673" H 3100 4050 50  0001 C CNN "URL"
 	1    3100 4050
 	1    0    0    -1  
 $EndComp
@@ -109,6 +111,8 @@ F 0 "C20" H 2265 3446 50  0000 L CNN
 F 1 "0.1u" H 2265 3355 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0402_1005Metric" H 2188 3250 50  0001 C CNN
 F 3 "~" H 2150 3400 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/samsung-electro-mechanics/CL05F104ZO5NNNC/1276-1004-1-ND/3889090" H 2150 3400 50  0001 C CNN "URL"
+F 5 "CL05F104ZO5NNNC" H 2150 3400 50  0001 C CNN "Manf#"
 	1    2150 3400
 	1    0    0    -1  
 $EndComp
@@ -1180,6 +1184,8 @@ F 0 "J4" V 7196 3930 50  0000 L CNN
 F 1 "Conn_02x03_Odd_Even" V 7105 3930 50  0000 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 7100 3750 50  0001 C CNN
 F 3 "~" H 7100 3750 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/3m/929665-01-03-EU/3M156306-06-ND/3833338" V 7100 3750 50  0001 C CNN "URL"
+F 5 "929665-01-03-EU" V 7100 3750 50  0001 C CNN "Manf#"
 	1    7100 3750
 	0    1    -1   0   
 $EndComp
@@ -1245,6 +1251,8 @@ F 0 "C25" H 1765 3446 50  0000 L CNN
 F 1 "10u" H 1765 3355 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0402_1005Metric" H 1688 3250 50  0001 C CNN
 F 3 "~" H 1650 3400 50  0001 C CNN
+F 4 "https://www.digikey.jp/product-detail/ja/samsung-electro-mechanics/CL05A106MP8NUB8/1276-6830-1-ND/5961689" H 1650 3400 50  0001 C CNN "URL"
+F 5 "CL05A106MP8NUB8" H 1650 3400 50  0001 C CNN "Manf#"
 	1    1650 3400
 	1    0    0    -1  
 $EndComp
