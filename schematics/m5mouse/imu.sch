@@ -21,8 +21,8 @@ F 0 "U4" H 5800 5550 60  0000 L CNN
 F 1 "ICM-20648" H 5550 5400 60  0000 L CNN
 F 2 "Package_DFN_QFN:QFN-24-1EP_3x3mm_P0.4mm_EP1.75x1.6mm" H 5950 3750 60  0001 C CNN
 F 3 "" H 5950 3750 60  0000 C CNN
-F 4 "https://www.digikey.jp/product-detail/ja/tdk-invensense/ICM-20948/1428-1123-1-ND/7062698" H 5900 3750 50  0001 C CNN "URL"
-F 5 "ICM-20948" H 5900 3750 50  0001 C CNN "Manf#"
+F 4 "https://www.digikey.jp/product-detail/ja/tdk-invensense/ICM-20648/1428-1061-1-ND/5872876" H 5900 3750 50  0001 C CNN "URL"
+F 5 "ICM-20648" H 5900 3750 50  0001 C CNN "Manf#"
 	1    5900 3750
 	1    0    0    -1  
 $EndComp

@@ -1146,6 +1146,8 @@ F 0 "J5" V 9146 3930 50  0000 L CNN
 F 1 "Conn_02x03_Odd_Even" V 9055 3930 50  0000 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 9050 3750 50  0001 C CNN
 F 3 "~" H 9050 3750 50  0001 C CNN
+F 4 "929665-01-03-EU" V 9050 3750 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/3m/929665-01-03-EU/3M156306-06-ND/3833338" V 9050 3750 50  0001 C CNN "URL"
 	1    9050 3750
 	0    1    -1   0   
 $EndComp
@@ -1184,8 +1186,8 @@ F 0 "J4" V 7196 3930 50  0000 L CNN
 F 1 "Conn_02x03_Odd_Even" V 7105 3930 50  0000 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 7100 3750 50  0001 C CNN
 F 3 "~" H 7100 3750 50  0001 C CNN
-F 4 "https://www.digikey.jp/product-detail/ja/3m/929665-01-03-EU/3M156306-06-ND/3833338" V 7100 3750 50  0001 C CNN "URL"
-F 5 "929665-01-03-EU" V 7100 3750 50  0001 C CNN "Manf#"
+F 4 "929665-01-03-EU" V 7100 3750 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/3m/929665-01-03-EU/3M156306-06-ND/3833338" V 7100 3750 50  0001 C CNN "URL"
 	1    7100 3750
 	0    1    -1   0   
 $EndComp
