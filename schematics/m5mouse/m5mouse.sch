@@ -1519,14 +1519,14 @@ B1 40 14 DA 08 21 16 88 42 1B 21 84 10 42 C8 60 F0 3F B4 60 62 D8 51 4E 56 64 00
 4E 44 AE 42 60 82 
 EndData
 $EndBitmap
-Text GLabel 2850 3200 0    50   BiDi ~ 0
+Text GLabel 2850 3000 0    50   BiDi ~ 0
 M5_I2C1_SDA
 Wire Wire Line
-	2850 3200 3100 3200
-Text GLabel 3850 3200 2    50   Output ~ 0
+	2850 3000 3100 3000
+Text GLabel 3850 3000 2    50   Output ~ 0
 M5_I2C1_SCL
 Wire Wire Line
-	3600 3200 3850 3200
+	3600 3000 3850 3000
 $Comp
 L Connector_Generic:Conn_02x15_Odd_Even J2
 U 1 1 5ECE4A06
@@ -2022,7 +2022,7 @@ Wire Wire Line
 	13000 6400 13250 6400
 Text Notes 13900 6450 0    50   ~ 0
 I2C Slave
-Text Notes 2400 3100 0    50   ~ 0
+Text Notes 2400 2900 0    50   ~ 0
 I2C Master
 NoConn ~ 13000 6900
 NoConn ~ 13000 7000
@@ -2047,48 +2047,17 @@ NoConn ~ 3600 3500
 NoConn ~ 3600 3400
 NoConn ~ 3600 3300
 NoConn ~ 3600 3100
-NoConn ~ 3600 3000
 NoConn ~ 3600 2900
 NoConn ~ 3600 2800
 NoConn ~ 3600 2700
 NoConn ~ 3600 2600
-NoConn ~ 3600 2500
-$Comp
-L power:GND #PWR0118
-U 1 1 5F16FAC2
-P 2600 2650
-F 0 "#PWR0118" H 2600 2400 50  0001 C CNN
-F 1 "GND" H 2605 2477 50  0000 C CNN
-F 2 "" H 2600 2650 50  0001 C CNN
-F 3 "" H 2600 2650 50  0001 C CNN
-	1    2600 2650
-	1    0    0    -1  
-$EndComp
 NoConn ~ 3100 2700
 NoConn ~ 3100 2800
 NoConn ~ 3100 2900
-NoConn ~ 3100 3000
 NoConn ~ 3100 3100
 NoConn ~ 3100 3300
 NoConn ~ 3100 3400
 NoConn ~ 3100 3500
-NoConn ~ 3100 3600
-NoConn ~ 3100 3700
-NoConn ~ 3100 3800
-Wire Wire Line
-	2600 2600 2600 2650
-Wire Wire Line
-	2600 2600 3100 2600
-Wire Wire Line
-	2600 2500 2600 2600
-Wire Wire Line
-	2600 2500 3100 2500
-Connection ~ 2600 2600
-Wire Wire Line
-	3100 2400 2600 2400
-Wire Wire Line
-	2600 2400 2600 2500
-Connection ~ 2600 2500
 $Comp
 L Connector_Generic:Conn_01x03 J6
 U 1 1 5F25477B
@@ -2484,18 +2453,18 @@ $EndComp
 $Comp
 L power:+5V #PWR011
 U 1 1 5F219F14
-P 3900 3550
-F 0 "#PWR011" H 3900 3400 50  0001 C CNN
-F 1 "+5V" H 3915 3723 50  0000 C CNN
-F 2 "" H 3900 3550 50  0001 C CNN
-F 3 "" H 3900 3550 50  0001 C CNN
-	1    3900 3550
+P 3900 2350
+F 0 "#PWR011" H 3900 2200 50  0001 C CNN
+F 1 "+5V" H 3915 2523 50  0000 C CNN
+F 2 "" H 3900 2350 50  0001 C CNN
+F 3 "" H 3900 2350 50  0001 C CNN
+	1    3900 2350
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3900 3550 3900 3700
+	3900 2350 3900 2500
 Wire Wire Line
-	3900 3700 3600 3700
+	3900 2500 3600 2500
 $Comp
 L power:+5V #PWR012
 U 1 1 5F227704
@@ -2712,7 +2681,6 @@ F 3 "" H 6000 6000 50  0001 C CNN
 	1    6000 6000
 	1    0    0    -1  
 $EndComp
-NoConn ~ 3600 3800
 Wire Wire Line
 	13000 4600 13250 4600
 Wire Wire Line
@@ -4526,10 +4494,10 @@ FE FD 66 C8 72 1E 47 A8 35 32 C7 E4 54 08 A1 66 42 43 43 2F 5E BC 48 36 CE A9 F9
 00 00 00 49 45 4E 44 AE 42 60 82 
 EndData
 $EndBitmap
-Text GLabel 3850 2400 2    50   Input ~ 0
+Text GLabel 3850 3800 2    50   Input ~ 0
 ADC_BAT
 Wire Wire Line
-	3850 2400 3600 2400
+	3850 3800 3600 3800
 $Comp
 L Device:R R19
 U 1 1 5F2AF41C
@@ -4715,13 +4683,6 @@ Wire Wire Line
 Wire Wire Line
 	10950 7300 10100 7300
 Connection ~ 10100 7300
-Wire Wire Line
-	10100 7300 10100 7100
-Wire Wire Line
-	10550 7100 10100 7100
-Connection ~ 10100 7100
-Wire Wire Line
-	10100 7100 10100 6900
 NoConn ~ 11600 6800
 Wire Wire Line
 	13000 6700 13250 6700
@@ -5030,4 +4991,39 @@ F 5 "https://www.digikey.jp/product-detail/ja/yageo/RC0603JR-070RL/311-0-0GRCT-N
 	1    13750 7200
 	0    1    1    0   
 $EndComp
+Connection ~ 2600 3700
+Wire Wire Line
+	2600 3600 2600 3700
+Wire Wire Line
+	3100 3600 2600 3600
+Connection ~ 2600 3800
+Wire Wire Line
+	2600 3700 3100 3700
+Wire Wire Line
+	2600 3700 2600 3800
+Wire Wire Line
+	2600 3800 3100 3800
+Wire Wire Line
+	2600 3800 2600 3850
+$Comp
+L power:GND #PWR0118
+U 1 1 5F16FAC2
+P 2600 3850
+F 0 "#PWR0118" H 2600 3600 50  0001 C CNN
+F 1 "GND" H 2605 3677 50  0000 C CNN
+F 2 "" H 2600 3850 50  0001 C CNN
+F 3 "" H 2600 3850 50  0001 C CNN
+	1    2600 3850
+	1    0    0    -1  
+$EndComp
+NoConn ~ 3600 2400
+NoConn ~ 3100 2400
+NoConn ~ 3100 2500
+NoConn ~ 3100 2600
+NoConn ~ 3600 3700
+NoConn ~ 3100 3200
+NoConn ~ 3600 3200
+Wire Wire Line
+	10100 6900 10100 7300
+NoConn ~ 10550 7100
 $EndSCHEMATC
