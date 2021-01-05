@@ -113,7 +113,9 @@ int main(void)
   MX_SPI1_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  char txbuf[]="Tick\r\n";
+  char txbuf[256] = {};
+  uint16_t adcValueOn = 0;
+  uint16_t adcValueOff = 0;
   HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
 
   /* USER CODE END 2 */
@@ -123,10 +125,19 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_SET);
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, 1000);
+    adcValueOn = HAL_ADC_GetValue(&hadc1);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_RESET);
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, 1000);
+    adcValueOff = HAL_ADC_GetValue(&hadc1);
+    sprintf(txbuf, "%d, %d\r\n", adcValueOn, adcValueOff);
     HAL_UART_Transmit(&huart3, (uint8_t *)txbuf, sizeof(txbuf), 0xFFFF);
-    HAL_Delay(500);
+    HAL_Delay(100);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
