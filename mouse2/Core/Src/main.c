@@ -113,7 +113,7 @@ int main(void)
   MX_SPI1_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  char txbuf[]="Tick\n";
+  char txbuf[]="Tick\r\n";
   HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
 
   /* USER CODE END 2 */
