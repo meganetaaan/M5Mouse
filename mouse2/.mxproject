@@ -6,13 +6,13 @@ HeaderFiles#1=/work/ghq/github.com/meganetaaan/M5Mouse/mouse2/Core/Inc/stm32f4xx
 HeaderFiles#2=/work/ghq/github.com/meganetaaan/M5Mouse/mouse2/Core/Inc/main.h
 HeaderFolderListSize=1
 HeaderPath#0=/work/ghq/github.com/meganetaaan/M5Mouse/mouse2/Core/Inc
-HeaderFiles=;
 SourceFileListSize=3
 SourceFiles#0=/work/ghq/github.com/meganetaaan/M5Mouse/mouse2/Core/Src/stm32f4xx_it.c
 SourceFiles#1=/work/ghq/github.com/meganetaaan/M5Mouse/mouse2/Core/Src/stm32f4xx_hal_msp.c
 SourceFiles#2=/work/ghq/github.com/meganetaaan/M5Mouse/mouse2/Core/Src/main.c
 SourceFolderListSize=1
 SourcePath#0=/work/ghq/github.com/meganetaaan/M5Mouse/mouse2/Core/Src
+HeaderFiles=;
 SourceFiles=;
 
 [PreviousLibFiles]
