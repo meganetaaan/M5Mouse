@@ -28,7 +28,9 @@
 #include <drivers/gyro.h>
 #include <drivers/encoder.h>
 #include <drivers/motor.h>
+#include <drivers/sensor.h>
 #include <mouse.h>
+#include <delay_us.h>
 
 /* USER CODE END Includes */
 
@@ -152,8 +154,10 @@ int main(void) {
   m5motor_init(motorR);
   mouse->motorR = motorR;
 
-  uint16_t adcValueOn = 0;
-  uint16_t adcValueOff = 0;
+  uint16_t adc_l = 0;
+  uint16_t adc_fl = 0;
+  uint16_t adc_fr = 0;
+  uint16_t adc_r = 0;
   int encoderCountL = 0;
   int encoderCountR = 0;
   HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
@@ -185,16 +189,62 @@ int main(void) {
   m5encoder_init(encoderR);
   mouse->encoderR = encoderR;
 
+  m5AnalogConfiguration adRec_l = malloc(sizeof(m5AnalogConfigurationRecord));
+  adRec_l->handler = &hadc1;
+  adRec_l->channel = ADC_CHANNEL_0;
+  m5Sensor sensor_l = malloc(sizeof(m5SensorRecord));
+  sensor_l->analog = adRec_l;
+  sensor_l->led_port = GPIOC;
+  sensor_l->led_pin = GPIO_PIN_4;
+  m5sensor_init(sensor_l);
+
+  m5AnalogConfiguration adRec_fl = malloc(sizeof(m5AnalogConfigurationRecord));
+  adRec_fl->handler = &hadc1;
+  adRec_fl->channel = ADC_CHANNEL_1;
+  m5Sensor sensor_fl = malloc(sizeof(m5SensorRecord));
+  sensor_fl->analog = adRec_fl;
+  sensor_fl->led_port = GPIOC;
+  sensor_fl->led_pin = GPIO_PIN_5;
+  m5sensor_init(sensor_fl);
+
+  m5AnalogConfiguration adRec_fr = malloc(sizeof(m5AnalogConfigurationRecord));
+  adRec_fr->handler = &hadc1;
+  adRec_fr->channel = ADC_CHANNEL_2;
+  m5Sensor sensor_fr = malloc(sizeof(m5SensorRecord));
+  sensor_fr->analog = adRec_fr;
+  sensor_fr->led_port = GPIOB;
+  sensor_fr->led_pin = GPIO_PIN_0;
+  m5sensor_init(sensor_fr);
+
+  m5AnalogConfiguration adRec_r = malloc(sizeof(m5AnalogConfigurationRecord));
+  adRec_r->handler = &hadc1;
+  adRec_r->channel = ADC_CHANNEL_3;
+  m5Sensor sensor_r = malloc(sizeof(m5SensorRecord));
+  sensor_r->analog = adRec_r;
+  sensor_r->led_port = GPIOB;
+  sensor_r->led_pin = GPIO_PIN_1;
+
+  m5sensor_init(sensor_r);
+  mouse->sensorL = sensor_l;
+  mouse->sensorFL = sensor_fl;
+  mouse->sensorFR = sensor_fr;
+  mouse->sensorR = sensor_r;
+
   // 開始
   m5encoder_start(encoderL);
   m5encoder_start(encoderR);
   m5gyro_start(gyro);
   m5motor_start(motorL);
   m5motor_start(motorR);
+  m5sensor_start(sensor_l);
+  m5sensor_start(sensor_fl);
+  m5sensor_start(sensor_fr);
+  m5sensor_start(sensor_r);
 
   // 割り込みハンドラの開始
   HAL_TIM_Base_Start_IT(&htim6);
 
+  /*
   printf("right forward\n");
   m5motor_set_pwm(motorR, 1, 300);
   HAL_Delay(1000);
@@ -225,6 +275,7 @@ int main(void) {
 
   printf("stop\n");
   m5motor_set_pwm(motorR, 1, 0);
+  */
 
   /* USER CODE END 2 */
 
@@ -233,24 +284,18 @@ int main(void) {
   while (1)
 
   {
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_SET);
-    HAL_ADC_Start(&hadc1);
-    HAL_ADC_PollForConversion(&hadc1, 1000);
-    adcValueOn = HAL_ADC_GetValue(&hadc1);
-
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
-
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_RESET);
-    HAL_ADC_Start(&hadc1);
-    HAL_ADC_PollForConversion(&hadc1, 1000);
-    adcValueOff = HAL_ADC_GetValue(&hadc1);
     // sprintf(txbuf, "%d, %d\r\n", adcValueOn, adcValueOff);
     // HAL_UART_Transmit(&huart3, (uint8_t *)txbuf, sizeof(txbuf), 0xFFFF);
     encoderCountL = m5encoder_count(mouse->encoderL);
     encoderCountR = m5encoder_count(mouse->encoderR);
-    printf("tim6: %lu, encoder_count L: %d, R: %d\n", m5timerCount,
-           encoderCountL, encoderCountR);
+    adc_l = m5sensor_read(mouse->sensorL);
+    adc_fl = m5sensor_read(mouse->sensorFL);
+    adc_fr = m5sensor_read(mouse->sensorFR);
+    adc_r = m5sensor_read(mouse->sensorR);
+    // printf("tim6: %lu, encoder_count L: %d, R: %d\n", m5timerCount,
+          //  encoderCountL, encoderCountR);
+    printf("sensor...L: %d, FL: %d, FR: %d, R: %d\n", adc_l, adc_fl, adc_fr, adc_r);
+    // printf("sensor: %d\n", adc_r);
     HAL_Delay(1000);
     /* USER CODE END WHILE */
 

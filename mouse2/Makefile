@@ -37,9 +37,13 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 Core/Src/main.c \
+Core/Src/mouse.c \
+Core/Src/delay_us.c \
+Core/Src/controllers/command.c \
 Core/Src/drivers/gyro.c \
 Core/Src/drivers/encoder.c \
 Core/Src/drivers/motor.c \
+Core/Src/drivers/sensor.c \
 Core/Src/pins/spi.c \
 Core/Src/pins/timer.c \
 Core/Src/stm32f4xx_it.c \
