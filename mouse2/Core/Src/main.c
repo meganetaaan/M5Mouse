@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -23,14 +23,15 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <stdlib.h>
-#include <drivers/gyro.h>
+#include <delay_us.h>
 #include <drivers/encoder.h>
+#include <drivers/gyro.h>
 #include <drivers/motor.h>
 #include <drivers/sensor.h>
+#include <global.h>
 #include <mouse.h>
-#include <delay_us.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /* USER CODE END Includes */
 
@@ -82,6 +83,9 @@ static void MX_TIM6_Init(void);
 extern void initialise_monitor_handles(void);
 extern uint32_t m5timerCount;
 extern m5Mouse mouse;
+extern uint8_t m5transferRequested;
+extern uint8_t m5transferDirection;
+extern uint8_t m5i2cbuffer[256];
 
 /* USER CODE END PFP */
 
@@ -243,6 +247,7 @@ int main(void) {
 
   // 割り込みハンドラの開始
   HAL_TIM_Base_Start_IT(&htim6);
+  // HAL_I2C_EnableListen_IT(&hi2c1);
 
   /*
   printf("right forward\n");
@@ -284,25 +289,44 @@ int main(void) {
   while (1)
 
   {
-    // sprintf(txbuf, "%d, %d\r\n", adcValueOn, adcValueOff);
+    // printf("transfer complete. count: %d\n", count);
+    HAL_StatusTypeDef status =
+        HAL_I2C_Slave_Receive(&hi2c1, m5i2cbuffer, 1, 1000);
+    if (status == HAL_OK) {
+      switch (m5i2cbuffer[0]) {
+        case M5_REGISTER_WHO_AM_I:
+          m5i2cbuffer[0] = M5_VALUE_WHO_AM_I;
+          break;
+        case M5_REGISTER_TEST:
+          m5i2cbuffer[0] = i2cCount++;
+          break;
+        default:
+          m5i2cbuffer[0] = 0xFF;
+      }
+      HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 1000);
+    } else {
+      printf("error %d\n", status);
+    }
+    // HAL_Delay(1000);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
     // HAL_UART_Transmit(&huart3, (uint8_t *)txbuf, sizeof(txbuf), 0xFFFF);
-    encoderCountL = m5encoder_count(mouse->encoderL);
-    encoderCountR = m5encoder_count(mouse->encoderR);
-    adc_l = m5sensor_read(mouse->sensorL);
-    adc_fl = m5sensor_read(mouse->sensorFL);
-    adc_fr = m5sensor_read(mouse->sensorFR);
-    adc_r = m5sensor_read(mouse->sensorR);
+    // encoderCountL = m5encoder_count(mouse->encoderL);
+    // encoderCountR = m5encoder_count(mouse->encoderR);
+    // adc_l = m5sensor_read(mouse->sensorL);
+    // adc_fl = m5sensor_read(mouse->sensorFL);
+    // adc_fr = m5sensor_read(mouse->sensorFR);
+    // adc_r = m5sensor_read(mouse->sensorR);
     // printf("tim6: %lu, encoder_count L: %d, R: %d\n", m5timerCount,
-          //  encoderCountL, encoderCountR);
-    printf("sensor...L: %d, FL: %d, FR: %d, R: %d\n", adc_l, adc_fl, adc_fr, adc_r);
+    //  encoderCountL, encoderCountR);
+    // printf("sensor...L: %d, FL: %d, FR: %d, R: %d\n", adc_l, adc_fl, adc_fr,
+    //        adc_r);
     // printf("sensor: %d\n", adc_r);
-    HAL_Delay(1000);
     /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
   }
-  /* USER CODE END 3 */
+
+  /* USER CODE BEGIN 3 */
 }
+/* USER CODE END 3 */
 
 /**
  * @brief System Clock Configuration
@@ -404,14 +428,14 @@ static void MX_I2C1_Init(void) {
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 400000;
+  hi2c1.Init.ClockSpeed = 100000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 200;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
   hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_ENABLE;
   if (HAL_I2C_Init(&hi2c1) != HAL_OK) {
     Error_Handler();
   }

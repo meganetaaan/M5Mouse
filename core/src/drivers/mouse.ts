@@ -12,6 +12,7 @@ type RegistoryKey =
   | 'WRITE_MOTOR_V_L'
   | 'WRITE_MOTOR_V_R'
   | 'WHO_AM_I'
+  | 'TEST'
 type EncoderPosition = 'LEFT' | 'RIGHT'
 type SensorPosition = 'LEFT' | 'FRONT_LEFT' | 'FRONT_RIGHT' | 'RIGHT'
 const DEFAULT_ADDRESS = 0x64 // June 4th is the Mouse Day
@@ -28,7 +29,8 @@ const REGISTORY: { [key in RegistoryKey]: number } = {
   READ_SENSOR_R: 0x23,
   WRITE_MOTOR_V_L: 0x30,
   WRITE_MOTOR_V_R: 0x31,
-  WHO_AM_I: 0x68
+  WHO_AM_I: 0x68,
+  TEST: 0xFF
 }
 
 interface ConstructorParam extends I2C.ConstructorParam {
@@ -112,5 +114,9 @@ export default class Mouse {
 
   public whoami(flag: boolean): number {
     return this.readByte(REGISTORY.WHO_AM_I)
+  }
+
+  public readTest(): number {
+    return this.readByte(REGISTORY.TEST)
   }
 }

@@ -22,6 +22,7 @@ TARGET = mouse2
 # debug build?
 DEBUG = 1
 # optimization
+# OPT = -O0
 OPT = -O0
 
 
@@ -39,6 +40,7 @@ C_SOURCES =  \
 Core/Src/main.c \
 Core/Src/mouse.c \
 Core/Src/delay_us.c \
+Core/Src/global.c \
 Core/Src/controllers/command.c \
 Core/Src/drivers/gyro.c \
 Core/Src/drivers/encoder.c \
@@ -131,7 +133,9 @@ C_INCLUDES =  \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/drivers \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
--IDrivers/CMSIS/Include
+-IDrivers/CMSIS/Include \
+-IDrivers/CMSIS/DSP/Include
+
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

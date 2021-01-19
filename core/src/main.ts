@@ -100,7 +100,7 @@ function changeCommand() {
   ap.add(b)
   */
 
-  const str = mouse.whoami(flag)
+  const str = mouse.readTest()
   const b = new MarqueeLabel({
     state: 0,
     bottom: 10,

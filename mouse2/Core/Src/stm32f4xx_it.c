@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "global.h"
+#include "mouse.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,6 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define USE_HAL_I2C_REGISTER_CALLBACKS 1
 
 /* USER CODE END PD */
 
@@ -57,10 +59,15 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern I2C_HandleTypeDef hi2c1;
 extern TIM_HandleTypeDef htim6;
 /* USER CODE BEGIN EV */
 extern uint32_t m5TimerCount;
 extern m5Mouse mouse;
+extern uint8_t m5transferRequested;
+extern uint8_t m5transferDirection;
+// extern uint8_t i2cbuffer[];
+// extern uint16_t i2cCount;
 
 /* USER CODE END EV */
 
@@ -201,17 +208,40 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles I2C1 event interrupt.
+  */
+void I2C1_EV_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C1_EV_IRQn 0 */
+
+  /* USER CODE END I2C1_EV_IRQn 0 */
+  HAL_I2C_EV_IRQHandler(&hi2c1);
+  /* USER CODE BEGIN I2C1_EV_IRQn 1 */
+
+  /* USER CODE END I2C1_EV_IRQn 1 */
+}
+
+/**
+  * @brief This function handles I2C1 error interrupt.
+  */
+void I2C1_ER_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C1_ER_IRQn 0 */
+
+  /* USER CODE END I2C1_ER_IRQn 0 */
+  HAL_I2C_ER_IRQHandler(&hi2c1);
+  /* USER CODE BEGIN I2C1_ER_IRQn 1 */
+
+  /* USER CODE END I2C1_ER_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM6 global interrupt, DAC1 and DAC2 underrun error interrupts.
   */
 void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
-  m5timerCount++;
-  if (m5timerCount % 1000 == 0) {
-    if (mouse->gyro->active) {
-      m5gyro_update(mouse->gyro);
-    }
-  }
+
 
   /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
@@ -221,6 +251,35 @@ void TIM6_DAC_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection,
+                          uint16_t AddrMatchCode) {
+  UNUSED(AddrMatchCode);
+  // if (TransferDirection == I2C_DIRECTION_TRANSMIT) {
+  //   // HAL_I2C_Slave_Sequential_Receive_IT(&hi2c1, i2cbuffer, 1, I2C_FIRST_FRAME);
+  //   HAL_I2C_Slave_Receive(hi2c, m5i2cbuffer, 1, 1000);
+  //   switch (m5i2cbuffer[0]) {
+  //     case M5_REGISTER_WHO_AM_I:
+  //       m5i2cbuffer[0] = M5_VALUE_WHO_AM_I;
+  //       break;
+  //     case M5_REGISTER_TEST:
+  //       m5i2cbuffer[0] = i2cCount++;
+  //       break;
+  //     default:
+  //       m5i2cbuffer[0] = 0xFF;
+  //   }
+  // } else if (TransferDirection == I2C_DIRECTION_RECEIVE) {
+  //   HAL_I2C_Slave_Transmit(hi2c, m5i2cbuffer, 1, 1000);
+  //   // HAL_I2C_Slave_Sequential_Transmit_IT(&hi2c1, i2cbuffer, 1, I2C_LAST_FRAME);
+  // }
+  // hi2c->State = HAL_I2C_STATE_READY;
+  // HAL_I2C_EnableListen_IT(hi2c);
+}
 
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
+  hi2c->State = HAL_I2C_STATE_READY;
+  HAL_I2C_EnableListen_IT(hi2c);
+}
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
