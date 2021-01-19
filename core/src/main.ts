@@ -100,7 +100,12 @@ function changeCommand() {
   ap.add(b)
   */
 
-  const str = mouse.readTest()
+  let str: number | string;
+  try {
+    str = mouse.readTest()
+  } catch(e) {
+    str = 'error'
+  }
   const b = new MarqueeLabel({
     state: 0,
     bottom: 10,

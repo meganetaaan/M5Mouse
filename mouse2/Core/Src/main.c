@@ -303,6 +303,7 @@ int main(void) {
         default:
           m5i2cbuffer[0] = 0xFF;
       }
+      while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
       HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 1000);
     } else {
       printf("error %d\n", status);
@@ -428,7 +429,7 @@ static void MX_I2C1_Init(void) {
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 200;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;

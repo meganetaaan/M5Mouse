@@ -40,8 +40,12 @@ interface ConstructorParam extends I2C.ConstructorParam {
 export default class Mouse {
   private i2c: I2C
   private u8a: Uint8Array
-  constructor(param: ConstructorParam = { address: DEFAULT_ADDRESS }) {
-    this.i2c = new I2C(param)
+  constructor(param?: ConstructorParam ) {
+    this.i2c = new I2C({
+      ...param,
+      hz: 400_000,
+      address: DEFAULT_ADDRESS,
+    })
     this.u8a = new Uint8Array(40)
     this.initialize()
   }
