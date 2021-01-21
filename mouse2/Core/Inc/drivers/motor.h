@@ -18,6 +18,7 @@ typedef struct m5MotorRecord *m5Motor;
 void m5motor_init(m5Motor motor);
 void m5motor_start(m5Motor motor);
 void m5motor_set_pwm(m5Motor motor, uint8_t direction, uint16_t pwm);
+void m5motor_set_voltage(m5Motor motor, float voltage, float battery_voltage);
 void m5motor_stop(m5Motor motor);
 
 #endif

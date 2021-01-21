@@ -20,9 +20,18 @@ void m5motor_stop(m5Motor motor) {
   motor->active = 0;
 }
 
+void m5motor_set_voltage(m5Motor motor, float voltage, float battery_voltage) {
+  uint8_t direction = 1;
+  if (voltage < 0) {
+    voltage = -voltage;
+    direction = 0;
+  }
+  uint16_t pwm = voltage * 1000 / battery_voltage;
+  m5motor_set_pwm(motor, direction, pwm);
+}
+
 void m5motor_set_pwm(m5Motor motor, uint8_t direction, uint16_t pwm) {
   GPIO_PinState state = (motor->direction ^ direction) ? GPIO_PIN_SET : GPIO_PIN_RESET;
-  printf("motor: %d, direction: %d, pin: %d\n", motor->direction, direction, state);
   HAL_GPIO_WritePin(motor->dir_port, motor->dir_pin, state);
 
   __HAL_TIM_SET_COMPARE(motor->timer->handler, motor->timer->channel, pwm);

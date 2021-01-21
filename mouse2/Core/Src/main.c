@@ -28,6 +28,7 @@
 #include <drivers/gyro.h>
 #include <drivers/motor.h>
 #include <drivers/sensor.h>
+#include <controllers/pid.h>
 #include <global.h>
 #include <mouse.h>
 #include <stdio.h>
@@ -122,6 +123,10 @@ int main(void) {
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  while(1) {
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+    HAL_Delay(500);
+  }
   MX_ADC1_Init();
   MX_I2C1_Init();
   MX_TIM1_Init();
@@ -132,122 +137,16 @@ int main(void) {
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
-  // DRV8835のモード指定（PHASE/ENBLモード）
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_SET);
-
-  // モータ初期化
-  m5TimerConfiguration timerMotorL = malloc(sizeof(m5TimerConfigurationRecord));
-  timerMotorL->handler = &htim3;
-  timerMotorL->channel = TIM_CHANNEL_1;
-  m5Motor motorL = malloc(sizeof(m5MotorRecord));
-  motorL->dir_port = GPIOA;
-  motorL->dir_pin = GPIO_PIN_10;
-  motorL->direction = 0;
-  motorL->timer = timerMotorL;
-  m5motor_init(motorL);
-  mouse->motorL = motorL;
-
-  m5TimerConfiguration timerMotorR = malloc(sizeof(m5TimerConfigurationRecord));
-  timerMotorR->handler = &htim3;
-  timerMotorR->channel = TIM_CHANNEL_2;
-  m5Motor motorR = malloc(sizeof(m5MotorRecord));
-  motorR->dir_port = GPIOA;
-  motorR->dir_pin = GPIO_PIN_11;
-  motorR->direction = 1;
-  motorR->timer = timerMotorR;
-  m5motor_init(motorR);
-  mouse->motorR = motorR;
-
-  uint16_t adc_l = 0;
-  uint16_t adc_fl = 0;
-  uint16_t adc_fr = 0;
-  uint16_t adc_r = 0;
-  int encoderCountL = 0;
-  int encoderCountR = 0;
-  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-
-  // IMUの初期化
-  HAL_Delay(50);
-  m5SPIConfiguration spi = malloc(sizeof(m5SPIConfigurationRecord));
-  spi->cs_pin = GPIO_PIN_12;
-  spi->cs_port = GPIOC;
-  spi->handler = &hspi1;
-  m5Gyro gyro = malloc(sizeof(m5GyroRecord));
-  gyro->spi = spi;
-  m5gyro_init(gyro);
-  mouse->gyro = gyro;
-
-  // エンコーダの初期化
-  m5Encoder encoderL = malloc(sizeof(m5EncoderRecord));
-  m5Encoder encoderR = malloc(sizeof(m5EncoderRecord));
-  m5TimerConfiguration timerL = malloc(sizeof(m5TimerConfigurationRecord));
-  m5TimerConfiguration timerR = malloc(sizeof(m5TimerConfigurationRecord));
-  timerL->handler = &htim1;
-  encoderL->timer = timerL;
-  encoderL->direction = 1;
-  m5encoder_init(encoderL);
-  mouse->encoderL = encoderL;
-  timerR->handler = &htim4;
-  encoderR->timer = timerR;
-  encoderR->direction = 0;
-  m5encoder_init(encoderR);
-  mouse->encoderR = encoderR;
-
-  m5AnalogConfiguration adRec_l = malloc(sizeof(m5AnalogConfigurationRecord));
-  adRec_l->handler = &hadc1;
-  adRec_l->channel = ADC_CHANNEL_0;
-  m5Sensor sensor_l = malloc(sizeof(m5SensorRecord));
-  sensor_l->analog = adRec_l;
-  sensor_l->led_port = GPIOC;
-  sensor_l->led_pin = GPIO_PIN_4;
-  m5sensor_init(sensor_l);
-
-  m5AnalogConfiguration adRec_fl = malloc(sizeof(m5AnalogConfigurationRecord));
-  adRec_fl->handler = &hadc1;
-  adRec_fl->channel = ADC_CHANNEL_1;
-  m5Sensor sensor_fl = malloc(sizeof(m5SensorRecord));
-  sensor_fl->analog = adRec_fl;
-  sensor_fl->led_port = GPIOC;
-  sensor_fl->led_pin = GPIO_PIN_5;
-  m5sensor_init(sensor_fl);
-
-  m5AnalogConfiguration adRec_fr = malloc(sizeof(m5AnalogConfigurationRecord));
-  adRec_fr->handler = &hadc1;
-  adRec_fr->channel = ADC_CHANNEL_2;
-  m5Sensor sensor_fr = malloc(sizeof(m5SensorRecord));
-  sensor_fr->analog = adRec_fr;
-  sensor_fr->led_port = GPIOB;
-  sensor_fr->led_pin = GPIO_PIN_0;
-  m5sensor_init(sensor_fr);
-
-  m5AnalogConfiguration adRec_r = malloc(sizeof(m5AnalogConfigurationRecord));
-  adRec_r->handler = &hadc1;
-  adRec_r->channel = ADC_CHANNEL_3;
-  m5Sensor sensor_r = malloc(sizeof(m5SensorRecord));
-  sensor_r->analog = adRec_r;
-  sensor_r->led_port = GPIOB;
-  sensor_r->led_pin = GPIO_PIN_1;
-
-  m5sensor_init(sensor_r);
-  mouse->sensorL = sensor_l;
-  mouse->sensorFL = sensor_fl;
-  mouse->sensorFR = sensor_fr;
-  mouse->sensorR = sensor_r;
-
   // 開始
-  m5encoder_start(encoderL);
-  m5encoder_start(encoderR);
-  m5gyro_start(gyro);
-  m5motor_start(motorL);
-  m5motor_start(motorR);
-  m5sensor_start(sensor_l);
-  m5sensor_start(sensor_fl);
-  m5sensor_start(sensor_fr);
-  m5sensor_start(sensor_r);
+  m5main_init_mouse();
 
   // 割り込みハンドラの開始
   HAL_TIM_Base_Start_IT(&htim6);
   // HAL_I2C_EnableListen_IT(&hi2c1);
+  HAL_Delay(1000);
+  // mouse->active = 0;
+  // m5motor_set_voltage(mouse->motor_l, 2, 7.4);
+  // m5motor_set_voltage(mouse->motor_r, 2, 7.4);
 
   /*
   printf("right forward\n");
@@ -299,6 +198,7 @@ int main(void) {
           break;
         case M5_REGISTER_TEST:
           m5i2cbuffer[0] = i2cCount++;
+          m5mouse_straight(mouse, 1000);
           break;
         default:
           m5i2cbuffer[0] = 0xFF;
@@ -740,6 +640,116 @@ static void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 4 */
+void m5main_init_mouse() {
+  // DRV8835のモード指定（PHASE/ENBLモード）
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_SET);
+
+  // モータ初期化
+  m5TimerConfiguration timerMotorL = malloc(sizeof(m5TimerConfigurationRecord));
+  timerMotorL->handler = &htim3;
+  timerMotorL->channel = TIM_CHANNEL_1;
+  m5Motor motorL = malloc(sizeof(m5MotorRecord));
+  motorL->dir_port = GPIOA;
+  motorL->dir_pin = GPIO_PIN_10;
+  motorL->direction = 0;
+  motorL->timer = timerMotorL;
+  m5motor_init(motorL);
+  mouse->motor_l = motorL;
+
+  m5TimerConfiguration timerMotorR = malloc(sizeof(m5TimerConfigurationRecord));
+  timerMotorR->handler = &htim3;
+  timerMotorR->channel = TIM_CHANNEL_2;
+  m5Motor motorR = malloc(sizeof(m5MotorRecord));
+  motorR->dir_port = GPIOA;
+  motorR->dir_pin = GPIO_PIN_11;
+  motorR->direction = 1;
+  motorR->timer = timerMotorR;
+  m5motor_init(motorR);
+  mouse->motor_r = motorR;
+
+  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+
+  // IMUの初期化
+  HAL_Delay(50);
+  m5SPIConfiguration spi = malloc(sizeof(m5SPIConfigurationRecord));
+  spi->cs_pin = GPIO_PIN_12;
+  spi->cs_port = GPIOC;
+  spi->handler = &hspi1;
+  m5Gyro gyro = malloc(sizeof(m5GyroRecord));
+  gyro->spi = spi;
+  m5gyro_init(gyro);
+  mouse->gyro = gyro;
+
+  // エンコーダの初期化
+  m5Encoder encoderL = malloc(sizeof(m5EncoderRecord));
+  m5Encoder encoderR = malloc(sizeof(m5EncoderRecord));
+  m5TimerConfiguration timerL = malloc(sizeof(m5TimerConfigurationRecord));
+  m5TimerConfiguration timerR = malloc(sizeof(m5TimerConfigurationRecord));
+  timerL->handler = &htim1;
+  encoderL->timer = timerL;
+  encoderL->direction = 1;
+  m5encoder_init(encoderL);
+  mouse->encoder_l = encoderL;
+  timerR->handler = &htim4;
+  encoderR->timer = timerR;
+  encoderR->direction = 0;
+  m5encoder_init(encoderR);
+  mouse->encoder_r = encoderR;
+
+  m5AnalogConfiguration adRec_l = malloc(sizeof(m5AnalogConfigurationRecord));
+  adRec_l->handler = &hadc1;
+  adRec_l->channel = ADC_CHANNEL_0;
+  m5Sensor sensor_l = malloc(sizeof(m5SensorRecord));
+  sensor_l->analog = adRec_l;
+  sensor_l->led_port = GPIOC;
+  sensor_l->led_pin = GPIO_PIN_4;
+  m5sensor_init(sensor_l);
+
+  m5AnalogConfiguration adRec_fl = malloc(sizeof(m5AnalogConfigurationRecord));
+  adRec_fl->handler = &hadc1;
+  adRec_fl->channel = ADC_CHANNEL_1;
+  m5Sensor sensor_fl = malloc(sizeof(m5SensorRecord));
+  sensor_fl->analog = adRec_fl;
+  sensor_fl->led_port = GPIOC;
+  sensor_fl->led_pin = GPIO_PIN_5;
+  m5sensor_init(sensor_fl);
+
+  m5AnalogConfiguration adRec_fr = malloc(sizeof(m5AnalogConfigurationRecord));
+  adRec_fr->handler = &hadc1;
+  adRec_fr->channel = ADC_CHANNEL_2;
+  m5Sensor sensor_fr = malloc(sizeof(m5SensorRecord));
+  sensor_fr->analog = adRec_fr;
+  sensor_fr->led_port = GPIOB;
+  sensor_fr->led_pin = GPIO_PIN_0;
+  m5sensor_init(sensor_fr);
+
+  m5AnalogConfiguration adRec_r = malloc(sizeof(m5AnalogConfigurationRecord));
+  adRec_r->handler = &hadc1;
+  adRec_r->channel = ADC_CHANNEL_3;
+  m5Sensor sensor_r = malloc(sizeof(m5SensorRecord));
+  sensor_r->analog = adRec_r;
+  sensor_r->led_port = GPIOB;
+  sensor_r->led_pin = GPIO_PIN_1;
+
+  m5sensor_init(sensor_r);
+  mouse->sensor_l = sensor_l;
+  mouse->sensor_fl = sensor_fl;
+  mouse->sensor_fr = sensor_fr;
+  mouse->sensor_r = sensor_r;
+
+  m5PIDController controller_l = m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 100);
+  m5PIDController controller_r = m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 100);
+  mouse->controller_l = controller_l;
+  mouse->controller_r = controller_r;
+
+  mouse->current_motion = m5motion_constructor(0, 0, 0, 0);
+  mouse->target_motion = m5motion_constructor(0, 0, 40, 0);
+  mouse->cap_motion = m5motion_constructor(40, 20, 40, 20);
+  mouse->current_coordinate = m5coordinate_constructor(0, 0);
+  mouse->target_coordinate = m5coordinate_constructor(0, 0);
+
+  m5mouse_start(mouse);
+}
 
 /* USER CODE END 4 */
 
@@ -752,8 +762,13 @@ void Error_Handler(void) {
   /* User can add his own implementation to report the HAL error return state */
   while (1) {
     /* USER CODE END WHILE */
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-    for (uint64_t i = 0; i < 48000000; i++) {
+
+    int i = 0;
+    GPIOA->BSRR = GPIO_PIN_15;
+    for(i = 0; i < 400000; i++){
+    }
+    GPIOA->BSRR = (uint32_t)GPIO_PIN_15 << 16U;
+    for(i = 0; i < 400000; i++){
     }
     /* USER CODE BEGIN 3 */
   }

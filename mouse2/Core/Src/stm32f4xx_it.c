@@ -241,8 +241,18 @@ void I2C1_ER_IRQHandler(void)
 void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
-
-
+  if (mouse->active) {
+    m5mouse_update(mouse);
+  }
+  m5timerCount++;
+  /*
+  if (m5timerCount % 100 == 0) {
+    printf("\n\n");
+    printf("current_op: %d\n", mouse->current_op);
+    printf("current_motion->vel: %f, ang_vel: %f, accel: %f, ang_accel: %f\n", mouse->current_motion->vel, mouse->current_motion->ang_vel, mouse->current_motion->accel, mouse->current_motion->ang_accel);
+    printf("current_motion->vel: %f, ang_vel: %f, accel: %f, ang_accel: %f\n", mouse->current_motion->vel, mouse->current_motion->ang_vel, mouse->current_motion->accel, mouse->current_motion->ang_accel);
+  }
+  */
   /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
