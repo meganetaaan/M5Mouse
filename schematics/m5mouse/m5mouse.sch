@@ -2058,8 +2058,8 @@ F 0 "SW2" V 9254 3948 50  0000 L CNN
 F 1 "SW_Push" V 9345 3948 50  0000 L CNN
 F 2 "Button_Switch_THT:SW_Tactile_SPST_Angled_PTS645Vx39-2LFS" H 9300 4000 50  0001 C CNN
 F 3 "~" H 9300 4000 50  0001 C CNN
-F 4 "1825910-7" V 9300 3800 50  0001 C CNN "Manf#"
-F 5 "https://www.digikey.jp/product-detail/ja/te-connectivity-alcoswitch-switches/1825910-7/450-1804-ND/1731414" V 9300 3800 50  0001 C CNN "URL"
+F 4 "PTS645VL39-2 LFS" V 9300 3800 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/c-k/PTS645VL39-2-LFS/CKN9103-ND/1146765" V 9300 3800 50  0001 C CNN "URL"
 	1    9300 3800
 	0    1    1    0   
 $EndComp
@@ -4520,8 +4520,8 @@ F 0 "SW1" H 2400 4935 50  0000 C CNN
 F 1 "SW_SPDT" H 2400 4844 50  0000 C CNN
 F 2 "Button_Switch_THT:SW_CuK_OS102011MA1QN1_SPDT_Angled" H 2400 4650 50  0001 C CNN
 F 3 "~" H 2400 4650 50  0001 C CNN
-F 4 "EG1224" H 2400 4650 50  0001 C CNN "Manf#"
-F 5 "https://www.digikey.jp/product-detail/ja/e-switch/EG1224/EG2585-ND/502052?utm_adgroup=Switches&utm_source=google&utm_medium=cpc&utm_campaign=Dynamic%20Search_JP&utm_term=&productid=&gclid=CjwKCAjwnef6BRAgEiwAgv8mQUfr-xcs4CYH2XBHdbgL7JDyCOFgnaAjsRusl37e-Kt1f0lrQ_MqJRoCD-0QAvD_BwE" H 2400 4650 50  0001 C CNN "URL"
+F 4 "OS102011MA1QN1" H 2400 4650 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/products/ja?keywords=OS102011MA1QN1" H 2400 4650 50  0001 C CNN "URL"
 	1    2400 4650
 	1    0    0    -1  
 $EndComp
