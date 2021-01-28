@@ -61,6 +61,19 @@ typedef struct {
   uint8_t active;
 } m5MouseRecord, *m5Mouse;
 
+typedef struct {
+  uint32_t count;
+  uint32_t duration;
+  float distance;
+  float start_velocity;
+  float max_velocity;
+  float end_velocity;
+} m5MotionOpRecord, *m5MotionOp;
+
+m5MotionOp m5move_straight_constructor(float distance, float start_velocity, float max_velocity, float end_velocity);
+m5Motion m5move_next(m5MotionOp op);
+m5Motion m5move_is_end(m5MotionOp op);
+
 m5Mouse m5mouse(void);
 void m5mouse_start(m5Mouse mouse);
 void m5mouse_update(m5Mouse mouse);
@@ -70,7 +83,7 @@ void m5mouse_update_target_velocity(m5Mouse mouse);
 void m5mouse_update_current_velocity(m5Mouse mouse);
 void m5mouse_apply_velocity(m5Mouse mouse);
 void m5mouse_set_operation(m5Mouse mouse);
-void m5mouse_straight(m5Mouse mouse, float distance);
+void m5mouse_straight(m5Mouse mouse, float distance, float max_velocity, float end_velocity);
 void m5mouse_spin(m5Mouse mouse, float angle);
 M5ACCEL_OP m5command_next_operation(M5ACCEL_OP current_accel_op, m5Motion current_motion,
                       m5Motion target_motion, m5Coordinate current_coordinate,

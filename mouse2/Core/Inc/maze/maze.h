@@ -2,7 +2,7 @@
 #define M5_MAZE_MAZE_H
 #include <stm32f4xx_hal.h>
 
-#define MAZE_SIZE 16
+#define M5_MAZE_SIZE 16
 
 typedef union __attribute__((__packed__)) {
   uint8_t byte;
@@ -16,7 +16,7 @@ typedef union __attribute__((__packed__)) {
     uint8_t DoneSouth : 1;  // bit6
     uint8_t DoneWest : 1;   // bit7 MSB
   } bits;
-} m5Direction;
+} m5Cell;
 
 typedef struct {
   int x;
@@ -24,8 +24,8 @@ typedef struct {
 } m5Index;
 
 typedef struct {
-  m5Direction wall[MAZE_SIZE][MAZE_SIZE];
-  uint8_t step_map[MAZE_SIZE][MAZE_SIZE];
+  m5Cell wall[M5_MAZE_SIZE][M5_MAZE_SIZE];
+  uint8_t step_map[M5_MAZE_SIZE][M5_MAZE_SIZE];
   uint8_t dirty;
 } m5MazeRecord, *m5Maze;
 
@@ -33,12 +33,12 @@ typedef struct {
   size_t size;
   size_t idx_first;
   size_t idx_last;
-  m5Index array[MAZE_SIZE * MAZE_SIZE];
+  m5Index array[M5_MAZE_SIZE * M5_MAZE_SIZE];
 } m5QueueRecord, *m5Queue;
 
 // direction
-uint8_t m5direction_is_wall(m5Direction d, uint8_t i);
-uint8_t m5direction_num_walls(m5Direction d);
+uint8_t m5Cell_is_wall(m5Cell d, uint8_t i);
+uint8_t m5Cell_num_walls(m5Cell d);
 
 // queue
 m5Queue m5queue_constructor();
@@ -54,8 +54,8 @@ void m5maze_initialize(m5Maze maze);
 void m5maze_load(m5Maze maze, const char *filename);
 void m5maze_save(m5Maze maze, const char *filename);
 void m5maze_set_wall(m5Maze maze, m5Index index,
-                     const m5Direction *newState);
+                     const m5Cell *newState);
 void m5maze_update_step_map(m5Maze maze, m5Index destination);
-void m5maze_print_wall(m5Maze maze, uint8_t values[MAZE_SIZE][MAZE_SIZE]);
+void m5maze_print_wall(m5Maze maze, uint8_t values[M5_MAZE_SIZE][M5_MAZE_SIZE]);
 void m5maze_print_step_map(m5Maze maze);
 #endif

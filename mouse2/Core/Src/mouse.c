@@ -180,11 +180,10 @@ void m5mouse_update_current_velocity(m5Mouse mouse) {
   mouse->current_motion->vel = mouse->current_motion->vel * 0.9 + vel * 0.1;
   mouse->current_motion->ang_vel =
       mouse->current_motion->ang_vel * 0.9 + ang_vel * 0.1;
-
   return;
 };
 
-void m5mouse_straight(m5Mouse mouse, float distance) {
+void m5mouse_straight(m5Mouse mouse, float distance, float max_velocity, float end_velocity) {
   mouse->current_coordinate->distance = 0;
   mouse->current_coordinate->angle = 0;
 

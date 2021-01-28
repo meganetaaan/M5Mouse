@@ -9,6 +9,7 @@ struct m5SensorRecord {
   GPIO_TypeDef *led_port;
   uint16_t led_pin;
   float gain;
+  uint16_t value;
   uint8_t active;
 };
 

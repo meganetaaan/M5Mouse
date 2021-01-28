@@ -137,7 +137,7 @@ int main(void) {
   /* USER CODE BEGIN 2 */
 
   m5Maze maze = m5maze_constructor();
-  m5Direction dir = (m5Direction){0x0f};
+  m5Cell dir = (m5Cell){0x0f};
   m5maze_set_wall(maze, (m5Index){1, 1}, &dir);
   m5maze_set_wall(maze, (m5Index){1, 2}, &dir);
   m5maze_set_wall(maze, (m5Index){1, 3}, &dir);
@@ -164,7 +164,7 @@ int main(void) {
   HAL_TIM_Base_Start_IT(&htim6);
   // HAL_I2C_EnableListen_IT(&hi2c1);
   while(1) {
-    m5mouse_straight(mouse, 300);
+    m5mouse_straight(mouse, 300, mouse->cap_motion->vel, 0);
     HAL_Delay(300);
     m5mouse_spin(mouse, 180);
     HAL_Delay(300);
@@ -229,7 +229,7 @@ int main(void) {
           break;
         case M5_REGISTER_TEST:
           m5i2cbuffer[0] = i2cCount++;
-          m5mouse_straight(mouse, 1000);
+          m5mouse_straight(mouse, 1000, mouse->cap_motion->vel, 0);
           break;
         default:
           m5i2cbuffer[0] = 0xFF;

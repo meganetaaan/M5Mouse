@@ -34,7 +34,8 @@ uint16_t m5sensor_read(m5Sensor sensor) {
   HAL_ADC_Start(handler);
   HAL_ADC_PollForConversion(handler, 1000);
   uint16_t adcValueOff = HAL_ADC_GetValue(handler);
-  return adcValueOn - adcValueOff;
+  sensor->value = adcValueOn - adcValueOff;
+  return sensor->value;
 }
 
 void m5sensor_stop(m5Sensor sensor) {
