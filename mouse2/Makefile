@@ -46,6 +46,7 @@ Core/Src/drivers/gyro.c \
 Core/Src/drivers/encoder.c \
 Core/Src/drivers/motor.c \
 Core/Src/drivers/sensor.c \
+Core/Src/maze/maze.c \
 Core/Src/pins/spi.c \
 Core/Src/pins/timer.c \
 Core/Src/stm32f4xx_it.c \
