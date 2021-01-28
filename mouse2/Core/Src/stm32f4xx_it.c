@@ -98,6 +98,12 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+    GPIOA->BSRR = GPIO_PIN_15;
+    for(int i = 0; i < 4000000; i++){
+    }
+    GPIOA->BSRR = (uint32_t)GPIO_PIN_15 << 16U;
+    for(int i = 0; i < 4000000; i++){
+    }
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
 }
@@ -245,10 +251,18 @@ void TIM6_DAC_IRQHandler(void)
     m5mouse_update(mouse);
   }
   m5timerCount++;
+  if (m5timerCount % 500 == 0) {
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
+    // printf("\n\n");
+    // printf("current_accel_op: %d\n", mouse->current_accel_op);
+    // printf("current_corrdinate->distance: %f, angle: %f, target_coordinate->distance: %f, angle: %f\n", mouse->current_coordinate->distance, mouse->current_coordinate->angle, mouse->target_coordinate->distance, mouse->target_coordinate->angle);
+    // printf("current_motion->vel: %f, ang_vel: %f, accel: %f, ang_accel: %f\n", mouse->current_motion->vel, mouse->current_motion->ang_vel, mouse->current_motion->accel, mouse->current_motion->ang_accel);
+    // printf("target_motion->vel: %f, ang_vel: %f, accel: %f, ang_accel: %f\n", mouse->target_motion->vel, mouse->target_motion->ang_vel, mouse->target_motion->accel, mouse->target_motion->ang_accel);
+  }
   /*
   if (m5timerCount % 100 == 0) {
     printf("\n\n");
-    printf("current_op: %d\n", mouse->current_op);
+    printf("current_accel_op: %d\n", mouse->current_accel_op);
     printf("current_motion->vel: %f, ang_vel: %f, accel: %f, ang_accel: %f\n", mouse->current_motion->vel, mouse->current_motion->ang_vel, mouse->current_motion->accel, mouse->current_motion->ang_accel);
     printf("current_motion->vel: %f, ang_vel: %f, accel: %f, ang_accel: %f\n", mouse->current_motion->vel, mouse->current_motion->ang_vel, mouse->current_motion->accel, mouse->current_motion->ang_accel);
   }
