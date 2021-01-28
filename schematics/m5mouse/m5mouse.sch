@@ -4962,6 +4962,8 @@ F 0 "J6" H 8280 3692 50  0000 L CNN
 F 1 "Conn_01x03" H 8280 3601 50  0000 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 8200 3650 50  0001 C CNN
 F 3 "~" H 8200 3650 50  0001 C CNN
+F 4 "PRPC003SAAN-RC" H 8200 3650 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/sullins-connector-solutions/PRPC003SAAN-RC/S1011EC-03-ND/2775251" H 8200 3650 50  0001 C CNN "URL"
 	1    8200 3650
 	-1   0    0    1   
 $EndComp
@@ -5046,6 +5048,8 @@ F 0 "J10" H 6780 3292 50  0000 L CNN
 F 1 "Conn_01x03" H 6780 3201 50  0000 L CNN
 F 2 "Connector_PinSocket_2.54mm:PinSocket_1x03_P2.54mm_Vertical" H 6700 3250 50  0001 C CNN
 F 3 "~" H 6700 3250 50  0001 C CNN
+F 4 "PPPC031LFBN-RC" H 6700 3250 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/sullins-connector-solutions/PPPC031LFBN-RC/S7036-ND/810175" H 6700 3250 50  0001 C CNN "URL"
 	1    6700 3250
 	1    0    0    -1  
 $EndComp
@@ -5064,6 +5068,8 @@ F 0 "J11" H 6980 4242 50  0000 L CNN
 F 1 "Conn_01x03" H 6980 4151 50  0000 L CNN
 F 2 "Connector_PinSocket_2.54mm:PinSocket_1x03_P2.54mm_Vertical" H 6900 4200 50  0001 C CNN
 F 3 "~" H 6900 4200 50  0001 C CNN
+F 4 "PPPC031LFBN-RC" H 6900 4200 50  0001 C CNN "Manf#"
+F 5 "https://www.digikey.jp/product-detail/ja/sullins-connector-solutions/PPPC031LFBN-RC/S7036-ND/810175" H 6900 4200 50  0001 C CNN "URL"
 	1    6900 4200
 	1    0    0    -1  
 $EndComp
