@@ -29,6 +29,7 @@
 #include <drivers/motor.h>
 #include <drivers/sensor.h>
 #include <controllers/pid.h>
+#include "maze/maze.h"
 #include <global.h>
 #include <mouse.h>
 #include <stdio.h>
@@ -101,6 +102,8 @@ extern uint8_t m5i2cbuffer[256];
 int main(void) {
   /* USER CODE BEGIN 1 */
   initialise_monitor_handles();
+  #ifdef DEBUG
+  #endif
 
   /* USER CODE END 1 */
 
@@ -123,10 +126,6 @@ int main(void) {
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  while(1) {
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-    HAL_Delay(500);
-  }
   MX_ADC1_Init();
   MX_I2C1_Init();
   MX_TIM1_Init();
@@ -137,13 +136,43 @@ int main(void) {
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
+  m5Maze maze = m5maze_constructor();
+  m5Direction dir = (m5Direction){0x0f};
+  m5maze_set_wall(maze, (m5Index){1, 1}, &dir);
+  m5maze_set_wall(maze, (m5Index){1, 2}, &dir);
+  m5maze_set_wall(maze, (m5Index){1, 3}, &dir);
+  m5maze_set_wall(maze, (m5Index){1, 5}, &dir);
+  m5maze_set_wall(maze, (m5Index){1, 0}, &dir);
+  m5maze_set_wall(maze, (m5Index){3, 5}, &dir);
+  m5maze_set_wall(maze, (m5Index){3, 7}, &dir);
+  m5maze_set_wall(maze, (m5Index){3, 9}, &dir);
+  m5maze_set_wall(maze, (m5Index){5, 9}, &dir);
+  m5maze_set_wall(maze, (m5Index){5, 8}, &dir);
+  m5maze_set_wall(maze, (m5Index){6, 10}, &dir);
+  m5maze_set_wall(maze, (m5Index){9, 4}, &dir);
+  m5maze_update_step_map(maze, (m5Index){7, 8});
+  m5maze_print_step_map(maze);
+  while(1) {
+    // DO NOTHING;
+  }
   // 開始
   m5main_init_mouse();
+  m5mouse_start(mouse);
+  // m5encoder_start(mouse->encoder_l); m5encoder_start(mouse->encoder_r);
 
   // 割り込みハンドラの開始
   HAL_TIM_Base_Start_IT(&htim6);
   // HAL_I2C_EnableListen_IT(&hi2c1);
-  HAL_Delay(1000);
+  while(1) {
+    m5mouse_straight(mouse, 300);
+    HAL_Delay(300);
+    m5mouse_spin(mouse, 180);
+    HAL_Delay(300);
+  }
+
+  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
+  // HAL_Delay(1000);
+  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
   // mouse->active = 0;
   // m5motor_set_voltage(mouse->motor_l, 2, 7.4);
   // m5motor_set_voltage(mouse->motor_r, 2, 7.4);
@@ -180,6 +209,8 @@ int main(void) {
   printf("stop\n");
   m5motor_set_pwm(motorR, 1, 0);
   */
+  int32_t encoderCountL = 0;
+  int32_t encoderCountR = 0;
 
   /* USER CODE END 2 */
 
@@ -190,7 +221,7 @@ int main(void) {
   {
     // printf("transfer complete. count: %d\n", count);
     HAL_StatusTypeDef status =
-        HAL_I2C_Slave_Receive(&hi2c1, m5i2cbuffer, 1, 1000);
+        HAL_I2C_Slave_Receive(&hi2c1, m5i2cbuffer, 1, 100);
     if (status == HAL_OK) {
       switch (m5i2cbuffer[0]) {
         case M5_REGISTER_WHO_AM_I:
@@ -204,21 +235,20 @@ int main(void) {
           m5i2cbuffer[0] = 0xFF;
       }
       while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
-      HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 1000);
+      HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 100);
     } else {
-      printf("error %d\n", status);
+      // printf("error %d\n", status);
     }
     // HAL_Delay(1000);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
     // HAL_UART_Transmit(&huart3, (uint8_t *)txbuf, sizeof(txbuf), 0xFFFF);
-    // encoderCountL = m5encoder_count(mouse->encoderL);
-    // encoderCountR = m5encoder_count(mouse->encoderR);
     // adc_l = m5sensor_read(mouse->sensorL);
     // adc_fl = m5sensor_read(mouse->sensorFL);
     // adc_fr = m5sensor_read(mouse->sensorFR);
     // adc_r = m5sensor_read(mouse->sensorR);
-    // printf("tim6: %lu, encoder_count L: %d, R: %d\n", m5timerCount,
-    //  encoderCountL, encoderCountR);
+    encoderCountL += m5encoder_count(mouse->encoder_l);
+    encoderCountR += m5encoder_count(mouse->encoder_r);
+    // printf("tim6: %lu, encoder_count L: %d, R: %d\n", m5timerCount, encoderCountL, encoderCountR);
     // printf("sensor...L: %d, FL: %d, FR: %d, R: %d\n", adc_l, adc_fl, adc_fr,
     //        adc_r);
     // printf("sensor: %d\n", adc_r);
@@ -640,7 +670,7 @@ static void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 4 */
-void m5main_init_mouse() {
+void m5main_init_mouse(void) {
   // DRV8835のモード指定（PHASE/ENBLモード）
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_SET);
 
@@ -666,8 +696,6 @@ void m5main_init_mouse() {
   motorR->timer = timerMotorR;
   m5motor_init(motorR);
   mouse->motor_r = motorR;
-
-  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
 
   // IMUの初期化
   HAL_Delay(50);
@@ -698,7 +726,7 @@ void m5main_init_mouse() {
 
   m5AnalogConfiguration adRec_l = malloc(sizeof(m5AnalogConfigurationRecord));
   adRec_l->handler = &hadc1;
-  adRec_l->channel = ADC_CHANNEL_0;
+  adRec_l->channel = (ADC_ChannelConfTypeDef *)ADC_CHANNEL_0;
   m5Sensor sensor_l = malloc(sizeof(m5SensorRecord));
   sensor_l->analog = adRec_l;
   sensor_l->led_port = GPIOC;
@@ -707,7 +735,7 @@ void m5main_init_mouse() {
 
   m5AnalogConfiguration adRec_fl = malloc(sizeof(m5AnalogConfigurationRecord));
   adRec_fl->handler = &hadc1;
-  adRec_fl->channel = ADC_CHANNEL_1;
+  adRec_fl->channel = (ADC_ChannelConfTypeDef *)ADC_CHANNEL_1;
   m5Sensor sensor_fl = malloc(sizeof(m5SensorRecord));
   sensor_fl->analog = adRec_fl;
   sensor_fl->led_port = GPIOC;
@@ -716,7 +744,7 @@ void m5main_init_mouse() {
 
   m5AnalogConfiguration adRec_fr = malloc(sizeof(m5AnalogConfigurationRecord));
   adRec_fr->handler = &hadc1;
-  adRec_fr->channel = ADC_CHANNEL_2;
+  adRec_fr->channel = (ADC_ChannelConfTypeDef *)ADC_CHANNEL_2;
   m5Sensor sensor_fr = malloc(sizeof(m5SensorRecord));
   sensor_fr->analog = adRec_fr;
   sensor_fr->led_port = GPIOB;
@@ -725,7 +753,7 @@ void m5main_init_mouse() {
 
   m5AnalogConfiguration adRec_r = malloc(sizeof(m5AnalogConfigurationRecord));
   adRec_r->handler = &hadc1;
-  adRec_r->channel = ADC_CHANNEL_3;
+  adRec_r->channel = (ADC_ChannelConfTypeDef *)ADC_CHANNEL_3;
   m5Sensor sensor_r = malloc(sizeof(m5SensorRecord));
   sensor_r->analog = adRec_r;
   sensor_r->led_port = GPIOB;
@@ -743,12 +771,13 @@ void m5main_init_mouse() {
   mouse->controller_r = controller_r;
 
   mouse->current_motion = m5motion_constructor(0, 0, 0, 0);
-  mouse->target_motion = m5motion_constructor(0, 0, 40, 0);
-  mouse->cap_motion = m5motion_constructor(40, 20, 40, 20);
+  mouse->target_motion = m5motion_constructor(0, 0, 400, 240);
+  mouse->cap_motion = m5motion_constructor(200, 120, 400, 240);
   mouse->current_coordinate = m5coordinate_constructor(0, 0);
   mouse->target_coordinate = m5coordinate_constructor(0, 0);
+  mouse->current_accel_op = M5_BRAKE;
+  mouse->current_run_op = M5_STRAIGHT;
 
-  m5mouse_start(mouse);
 }
 
 /* USER CODE END 4 */
@@ -765,10 +794,10 @@ void Error_Handler(void) {
 
     int i = 0;
     GPIOA->BSRR = GPIO_PIN_15;
-    for(i = 0; i < 400000; i++){
+    for(i = 0; i < 40000000; i++){
     }
     GPIOA->BSRR = (uint32_t)GPIO_PIN_15 << 16U;
-    for(i = 0; i < 400000; i++){
+    for(i = 0; i < 40000000; i++){
     }
     /* USER CODE BEGIN 3 */
   }

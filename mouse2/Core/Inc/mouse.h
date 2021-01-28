@@ -16,6 +16,12 @@ typedef enum {
   M5_DECEL = 0x03U
 } M5ACCEL_OP;
 
+typedef enum {
+  M5_STRAIGHT = 0x00U,
+  M5_SLALOM = 0x01U,
+  M5_SPIN = 0x02U,
+} M5RUN_OP;
+
 typedef float m5MotionValue;
 
 typedef struct {
@@ -50,7 +56,8 @@ typedef struct {
   m5Sensor sensor_r;
   m5PIDController controller_l;
   m5PIDController controller_r;
-  M5ACCEL_OP current_op;
+  M5ACCEL_OP current_accel_op;
+  M5RUN_OP current_run_op;
   uint8_t active;
 } m5MouseRecord, *m5Mouse;
 
@@ -65,7 +72,7 @@ void m5mouse_apply_velocity(m5Mouse mouse);
 void m5mouse_set_operation(m5Mouse mouse);
 void m5mouse_straight(m5Mouse mouse, float distance);
 void m5mouse_spin(m5Mouse mouse, float angle);
-M5ACCEL_OP m5command_next_operation(M5ACCEL_OP current_op, m5Motion current_motion,
+M5ACCEL_OP m5command_next_operation(M5ACCEL_OP current_accel_op, m5Motion current_motion,
                       m5Motion target_motion, m5Coordinate current_coordinate,
-                      m5Coordinate target, float delta);
+                      m5Coordinate target, float delta, M5RUN_OP current_run_op);
 #endif

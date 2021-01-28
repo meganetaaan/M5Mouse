@@ -20,10 +20,11 @@ TARGET = mouse2
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+# DEBUG = 1
+DEBUG = 0
 # optimization
 # OPT = -O0
-OPT = -O0
+OPT = -Og
 
 
 #######################################
@@ -41,7 +42,7 @@ Core/Src/main.c \
 Core/Src/mouse.c \
 Core/Src/delay_us.c \
 Core/Src/global.c \
-Core/Src/controllers/command.c \
+Core/Src/controllers/pid.c \
 Core/Src/drivers/gyro.c \
 Core/Src/drivers/encoder.c \
 Core/Src/drivers/motor.c \
@@ -145,6 +146,7 @@ CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
+OPT = -O0
 endif
 
 

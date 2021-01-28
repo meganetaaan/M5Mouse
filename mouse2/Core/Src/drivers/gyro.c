@@ -21,7 +21,6 @@ void m5gyro_init(m5Gyro gyro) {
   // who am i
   uint8_t who_am_i;
   who_am_i = m5gyro_read_byte(gyro->spi, 0x00);
-  printf("WHO_AM_I = 0x%02x\n", who_am_i);
 
   m5SPIConfiguration spi = gyro->spi;
   // ICM-20648 settings
