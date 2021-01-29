@@ -1,5 +1,5 @@
-#ifndef M5_CONTROLLERS_COMMAND_H
-#define M5_CONTROLLERS_COMMAND_H
+#ifndef M5_CONTROLLERS_COMMAND_H_
+#define M5_CONTROLLERS_COMMAND_H_
 #include <stm32f4xx_hal.h>
 
 #define MAX_VEL 200

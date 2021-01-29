@@ -1,5 +1,5 @@
-#ifndef _M5_PINS_TIMER_H
-#define _M5_PINS_TIMER_H
+#ifndef _M5_PINS_TIMER_H_
+#define _M5_PINS_TIMER_H_
 #include "stm32f4xx_hal.h"
 
 struct m5TimerConfigurationRecord {

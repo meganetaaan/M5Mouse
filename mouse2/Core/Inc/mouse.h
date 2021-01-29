@@ -1,5 +1,5 @@
-#ifndef _M5_MOUSE_H
-#define _M5_MOUSE_H
+#ifndef _M5_MOUSE_H_
+#define _M5_MOUSE_H_
 #include <drivers/gyro.h>
 #include <drivers/encoder.h>
 #include <drivers/motor.h>

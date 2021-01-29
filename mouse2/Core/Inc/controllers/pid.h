@@ -1,5 +1,5 @@
-#ifndef M5_CONTROLLERS_PID_H
-#define M5_CONTROLLERS_PID_H
+#ifndef M5_CONTROLLERS_PID_H_
+#define M5_CONTROLLERS_PID_H_
 #include <stm32f4xx_hal.h>
 
 #define M5DEFAULT_PGAIN (0.015f)

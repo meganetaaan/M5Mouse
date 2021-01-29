@@ -1,4 +1,4 @@
-#ifndef M5_COMMON_UTIL_H
-#define M5_COMMON_UTIL_H
+#ifndef M5_COMMON_UTIL_H_
+#define M5_COMMON_UTIL_H_
 
 #endif

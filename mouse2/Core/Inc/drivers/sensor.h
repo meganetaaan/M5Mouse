@@ -1,5 +1,5 @@
-#ifndef _M5_DRIVER_SENSOR_H
-#define _M5_DRIVER_SENSOR_H
+#ifndef _M5_DRIVER_SENSOR_H_
+#define _M5_DRIVER_SENSOR_H_
 #include <pins/analog.h>
 
 #include "stm32f4xx_hal.h"

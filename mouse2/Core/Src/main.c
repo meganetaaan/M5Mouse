@@ -30,6 +30,8 @@
 #include <drivers/sensor.h>
 #include <controllers/pid.h>
 #include "maze/maze.h"
+#include "maze/maze_data.h"
+#include "maze/agent.h"
 #include <global.h>
 #include <mouse.h>
 #include <stdio.h>
@@ -137,21 +139,11 @@ int main(void) {
   /* USER CODE BEGIN 2 */
 
   m5Maze maze = m5maze_constructor();
-  m5Cell dir = (m5Cell){0x0f};
-  m5maze_set_wall(maze, (m5Index){1, 1}, &dir);
-  m5maze_set_wall(maze, (m5Index){1, 2}, &dir);
-  m5maze_set_wall(maze, (m5Index){1, 3}, &dir);
-  m5maze_set_wall(maze, (m5Index){1, 5}, &dir);
-  m5maze_set_wall(maze, (m5Index){1, 0}, &dir);
-  m5maze_set_wall(maze, (m5Index){3, 5}, &dir);
-  m5maze_set_wall(maze, (m5Index){3, 7}, &dir);
-  m5maze_set_wall(maze, (m5Index){3, 9}, &dir);
-  m5maze_set_wall(maze, (m5Index){5, 9}, &dir);
-  m5maze_set_wall(maze, (m5Index){5, 8}, &dir);
-  m5maze_set_wall(maze, (m5Index){6, 10}, &dir);
-  m5maze_set_wall(maze, (m5Index){9, 4}, &dir);
-  m5maze_update_step_map(maze, (m5Index){7, 8});
-  m5maze_print_step_map(maze);
+  // m5maze_load_from_array(maze, mazeData_maze);
+  // m5maze_update_step_map(maze, (m5Index){7, 8});
+  // m5maze_print_step_map(maze);
+  m5MazeAgent agent = m5mazeagent_constructor(maze, (m5Mouse)NULL);
+  m5agent_search_run(agent, (m5Index){7, 8});
   while(1) {
     // DO NOTHING;
   }

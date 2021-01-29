@@ -20,7 +20,7 @@ const uint8_t M5_DONE_WEST = 0x80;
   { -1, 0 }
 const m5Index M5_DIRECTIONS[4] = {M5_VEC_NORTH, M5_VEC_EAST, M5_VEC_SOUTH, M5_VEC_WEST};
 
-uint8_t m5Cell_is_wall(m5Cell d, uint8_t i) {
+uint8_t m5cell_is_wall(m5Cell d, uint8_t i) {
   return d.byte & (0x01 << i);
 }
 uint8_t m5Cell_num_walls(m5Cell d) {
@@ -49,11 +49,30 @@ void m5maze_initialize(m5Maze maze) {
   maze->dirty = 1;
 }
 
-void m5maze_load(m5Maze maze, const char *filename) {
+void m5maze_load_from_array(m5Maze maze, const char ascii_array[M5_MAZE_SIZE + 1][M5_MAZE_SIZE + 1]) {
+  for (int i = 0; i < M5_MAZE_SIZE; i++) {
+    for (int j = 0; j < M5_MAZE_SIZE; j++) {
+      char c = ascii_array[M5_MAZE_SIZE - 1 - i][j];
+      if(('0' <= c && c <= '9') || ('a' <= c && c <= 'f')) {
+        // ASCIIから0~16までの数値への変換
+        uint8_t wall_bin;
+        if ('0' <= c && c <= '9') {
+          wall_bin = c - '0';
+        } else {
+          wall_bin = c - 'a' + 10;
+        }
+        maze->wall[i][j].byte |= wall_bin | 0xf0;
+      }
+    }
+  }
+  maze->dirty = 1;
+}
+
+void m5maze_load_from_file(m5Maze maze, const char *filename) {
   // TODO: load
 }
 
-void m5maze_save(m5Maze maze, const char *filename) {
+void m5maze_save_to_file(m5Maze maze, const char *filename) {
   // TODO: save
 }
 
@@ -180,7 +199,7 @@ void m5maze_update_step_map(m5Maze maze, m5Index destination) {
                                   current_index.y + M5_DIRECTIONS[i].y};
       const uint8_t current_step =
           maze->step_map[current_index.y][current_index.x];
-      if (!m5Cell_is_wall(current_wall, i) &&
+      if (!m5cell_is_wall(current_wall, i) &&
           maze->step_map[scan_index.y][scan_index.x] > current_step + 1) {
         maze->step_map[scan_index.y][scan_index.x] = current_step + 1;
         if (m5Cell_num_walls(maze->wall[scan_index.y][scan_index.x]) !=

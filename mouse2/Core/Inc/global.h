@@ -1,5 +1,5 @@
-#ifndef _M5_GLOBAL_H
-#define _M5_GLOBAL_H
+#ifndef _M5_GLOBAL_H_
+#define _M5_GLOBAL_H_
 #include <mouse.h>
 
 #define M5_REGISTER_WHO_AM_I 0x68

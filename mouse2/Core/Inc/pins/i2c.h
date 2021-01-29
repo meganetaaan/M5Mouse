@@ -1,5 +1,5 @@
-#ifndef _M5_PINS_I2C_H
-#define _M5_PINS_I2C_H
+#ifndef _M5_PINS_I2C_H_
+#define _M5_PINS_I2C_H_
 #include "stm32f4xx_hal.h"
 
 struct m5I2CConfigurationRecord {

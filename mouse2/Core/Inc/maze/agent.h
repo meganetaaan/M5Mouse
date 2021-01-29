@@ -1,5 +1,5 @@
-#ifndef M5_MAZE_AGENT_H
-#define M5_MAZE_AGENT_H
+#ifndef M5_MAZE_AGENT_H_
+#define M5_MAZE_AGENT_H_
 
 #include "maze.h"
 #include "mouse.h"
@@ -32,6 +32,7 @@ typedef enum {
 
 typedef struct {
   m5Maze maze;
+  m5Maze _maze;
   m5Mouse mouse;
   m5AgentState state;
   m5Index position;
@@ -39,7 +40,15 @@ typedef struct {
   m5Index goal;
 } m5MazeAgentRecord, *m5MazeAgent;
 
-void search_run(m5MazeAgent agent, m5Index goal);
-void fast_run(m5MazeAgent agent, m5Index goal);
+m5MazeAgent m5mazeagent_constructor(m5Maze maze, m5Mouse mouse);
+void m5agent_advance(m5MazeAgent agent);
+void m5agent_straight(m5MazeAgent agent);
+void m5agent_turn_left(m5MazeAgent agent);
+void m5agent_turn_right(m5MazeAgent agent);
+void m5agent_turn_back(m5MazeAgent agent, uint8_t adjust);
+m5Cell m5agent_get_wall(m5MazeAgent agent);
+m5Direction m5agent_get_next_direction(m5MazeAgent agent);
+void m5agent_search_run(m5MazeAgent agent, m5Index goal);
+void m5agent_fast_run(m5MazeAgent agent, m5Index goal);
 
 #endif

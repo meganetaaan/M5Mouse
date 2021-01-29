@@ -1,5 +1,5 @@
-#ifndef _M5_DRIVER_ENCODER_H
-#define _M5_DRIVER_ENCODER_H
+#ifndef _M5_DRIVER_ENCODER_H_
+#define _M5_DRIVER_ENCODER_H_
 #include "stm32f4xx_hal.h"
 #include "pins/timer.h"
 

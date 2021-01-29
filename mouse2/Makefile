@@ -48,6 +48,7 @@ Core/Src/drivers/encoder.c \
 Core/Src/drivers/motor.c \
 Core/Src/drivers/sensor.c \
 Core/Src/maze/maze.c \
+Core/Src/maze/maze_data.c \
 Core/Src/maze/agent.c \
 Core/Src/pins/spi.c \
 Core/Src/pins/timer.c \
@@ -147,7 +148,7 @@ CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
-OPT = -O0
+OPT = -Og
 endif
 
 
