@@ -54,9 +54,9 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void m5main_init_mouse(void);
 
 /* USER CODE BEGIN EFP */
+void m5main_init_mouse(void);
 
 /* USER CODE END EFP */
 

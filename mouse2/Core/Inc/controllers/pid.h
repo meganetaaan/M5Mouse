@@ -2,9 +2,9 @@
 #define M5_CONTROLLERS_PID_H_
 #include <stm32f4xx_hal.h>
 
-#define M5DEFAULT_PGAIN (0.015f)
-#define M5DEFAULT_IGAIN (0.0010f)
-#define M5DEFAULT_DGAIN (0.0000f)
+#define M5DEFAULT_PGAIN (0.020f)
+#define M5DEFAULT_IGAIN (0.0020f)
+#define M5DEFAULT_DGAIN (0.0020f)
 
 typedef float m5Value;
 typedef struct {

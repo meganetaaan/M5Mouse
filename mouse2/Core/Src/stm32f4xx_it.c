@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "global.h"
 #include "mouse.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,13 +62,15 @@
 /* External variables --------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
 extern TIM_HandleTypeDef htim6;
+extern TIM_HandleTypeDef htim7;
 /* USER CODE BEGIN EV */
 extern uint32_t m5TimerCount;
 extern m5Mouse mouse;
 extern uint8_t m5transferRequested;
 extern uint8_t m5transferDirection;
+extern uint16_t m5sensor_count;
 // extern uint8_t i2cbuffer[];
-// extern uint16_t i2cCount;
+// extern uint16_t m5i2c_count;
 
 /* USER CODE END EV */
 
@@ -274,6 +277,45 @@ void TIM6_DAC_IRQHandler(void)
   /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 
+/**
+  * @brief This function handles TIM7 global interrupt.
+  */
+void TIM7_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_IRQn 0 */
+  if (mouse->active) {
+    m5sensor_count++;
+    switch(m5sensor_count % 4) {
+      case 0:
+        m5sensor_read(mouse->sensor->sensor_l);
+        break;
+      case 1:
+        m5sensor_read(mouse->sensor->sensor_fr);
+        break;
+      case 2:
+        m5sensor_read(mouse->sensor->sensor_fl);
+        break;
+      case 3:
+        m5sensor_read(mouse->sensor->sensor_r);
+        break;
+    }
+  }
+  // if (m5sensor_count % 4000 == 0) {
+  //   printf(
+  //       "m5sensor_count: %u, gyro: %f, sensor...l: %u, fl: %u, fr: %u, r: "
+  //       "%u\r\n",
+  //       m5sensor_count, mouse->gyro->ang_vel, mouse->sensor->sensor_l->value,
+  //       mouse->sensor->sensor_fl->value, mouse->sensor->sensor_fr->value,
+  //       mouse->sensor->sensor_r->value);
+  // }
+
+  /* USER CODE END TIM7_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim7);
+  /* USER CODE BEGIN TIM7_IRQn 1 */
+
+  /* USER CODE END TIM7_IRQn 1 */
+}
+
 /* USER CODE BEGIN 1 */
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection,
                           uint16_t AddrMatchCode) {
@@ -286,7 +328,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection,
   //       m5i2cbuffer[0] = M5_VALUE_WHO_AM_I;
   //       break;
   //     case M5_REGISTER_TEST:
-  //       m5i2cbuffer[0] = i2cCount++;
+  //       m5i2cbuffer[0] = m5i2c_count++;
   //       break;
   //     default:
   //       m5i2cbuffer[0] = 0xFF;
