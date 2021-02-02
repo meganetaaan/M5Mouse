@@ -107,9 +107,9 @@ extern uint8_t m5i2cbuffer[256];
  */
 int main(void) {
   /* USER CODE BEGIN 1 */
-  initialise_monitor_handles();
-#ifdef DEBUG
-#endif
+// #ifdef DEBUG
+  // initialise_monitor_handles();
+// #endif
 
   /* USER CODE END 1 */
 
@@ -157,9 +157,7 @@ int main(void) {
   // 割り込みハンドラの開始
   HAL_TIM_Base_Start_IT(&htim7);
   HAL_TIM_Base_Start_IT(&htim6);
-  HAL_Delay(5000);
-  int32_t encoderCountL = 0;
-  int32_t encoderCountR = 0;
+  HAL_Delay(1000);
 
   /* USER CODE END 2 */
 
@@ -180,16 +178,19 @@ int main(void) {
         case M5_REGISTER_TEST:
           m5i2cbuffer[0] = m5i2c_count++;
           HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 100);
+          m5wallsensor_calibrate(mouse->sensor);
           HAL_Delay(300);
           float v = 300.0;
           m5mouse_straight(mouse, 90, v, v);
-          for (int i = 0; i < 4; i++) {
+          for (int i = 0; i < 3; i++) {
+            m5mouse_straight(mouse, 180, v, v);
             m5mouse_straight(mouse, 90, v, 0);
             m5mouse_spin(mouse, 90);
             m5mouse_straight(mouse, 90, v, v);
-            m5mouse_straight(mouse, 180, v, v);
           }
+          m5mouse_straight(mouse, 180, v, v);
           m5mouse_straight(mouse, 90, v, 0);
+          m5mouse_spin(mouse, 90);
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
@@ -205,12 +206,8 @@ int main(void) {
       // printf("error %d\n", status);
     }
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-    // printf("tim6: %lu, encoder_count L: %d, R: %d\n", m5timerCount,
-    // encoderCountL, encoderCountR); printf("sensor...L: %d, FL: %d, FR: %d, R:
-    // %d\n", adc_l, adc_fl, adc_fr,
-    //        adc_r);
-    m5WallInfo wall = mouse->wall;
-    printf("\rwall... front: %u, left: %u, right: %u\n", wall.front, wall.left, wall.right);
+    // m5WallInfo wall = mouse->wall;
+    // printf("\rwall... front: %u, left: %u, right: %u\n", wall.front, wall.left, wall.right);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -759,15 +756,18 @@ void m5main_init_mouse(void) {
       m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
   m5PIDController controller_r =
       m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
+  m5PIDController controller_wall =
+      m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
   mouse->controller_l = controller_l;
   mouse->controller_r = controller_r;
+  mouse->controller_wall = controller_wall;
 
   mouse->current_motion = m5motion_constructor(0, 0, 0, 0);
   mouse->target_motion = m5motion_constructor(0, 0, 400, 240);
   mouse->cap_motion = m5motion_constructor(800, 240, 1000, 240);
   mouse->current_coordinate = m5coordinate_constructor(0, 0);
   mouse->target_coordinate = m5coordinate_constructor(0, 0);
-  mouse->current_run_op = M5_STRAIGHT;
+  mouse->current_run_op = M5_NONE;
 }
 
 /* USER CODE END 4 */

@@ -1,5 +1,6 @@
 #include <stm32f4xx_hal.h>
 #include "controllers/pid.h"
+#include <stdlib.h>
 
 m5PIDController m5pid_constructor(float p, float i, float d, float saturation) {
   m5PIDConfiguration config = malloc(sizeof(m5PIDConfigurationRecord));
@@ -8,13 +9,17 @@ m5PIDController m5pid_constructor(float p, float i, float d, float saturation) {
   config->d_gain = d;
   config->i_saturation = saturation;
   m5PIDContext ctx = malloc(sizeof(m5PIDContextRecord));
-  ctx->initialized = 0;
-  ctx->last_value = 0;
-  ctx->integrated_value = 0;
   m5PIDController controller = malloc(sizeof(m5PIDControllerRecord));
   controller->config = config;
   controller->context = ctx;
+  m5pid_reset(controller);
   return controller;
+}
+
+void m5pid_reset(m5PIDController pid) {
+  pid->context->last_value = 0;
+  pid->context->integrated_value = 0;
+  pid->context->initialized = 0;
 }
 
 m5Value m5pid_update(m5PIDController pid, m5Value target_value, m5Value current_value) {

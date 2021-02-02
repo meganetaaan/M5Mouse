@@ -19,8 +19,11 @@ void m5gyro_init(m5Gyro gyro) {
   HAL_GPIO_WritePin(gyro->spi->cs_port, gyro->spi->cs_pin, GPIO_PIN_SET);
 
   // who am i
+  /*
   uint8_t who_am_i;
   who_am_i = m5gyro_read_byte(gyro->spi, 0x00);
+  printf("gyro who_am_i: %d", who_am_i);
+  */
 
   m5SPIConfiguration spi = gyro->spi;
   // ICM-20648 settings

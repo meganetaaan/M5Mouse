@@ -17,6 +17,7 @@ m5WallSensor m5wallsensor_constructor(m5Sensor sensor_l, m5Sensor sensor_fl, m5S
   wall_sensor->threshold_l = M5_WALL_THRESH_L;
   wall_sensor->threshold_f = M5_WALL_THRESH_F;
   wall_sensor->threshold_r = M5_WALL_THRESH_R;
+  return wall_sensor;
 }
 
 void m5wallsensor_calibrate(m5WallSensor ws) {

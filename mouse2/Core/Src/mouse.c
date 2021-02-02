@@ -56,12 +56,20 @@ void m5mouse_apply_velocity(m5Mouse mouse) {
                         (mouse->current_motion->ang_vel / 2.0);
   m5MotionValue vel_r = mouse->current_motion->vel +
                         (mouse->current_motion->ang_vel / 2.0);
+  // TODO: 壁補正の補正項を計算する
+  m5Value voltage_wall = 0;
+  if (mouse->current_run_op == M5_STRAIGHT && mouse->wall.left && mouse->wall.right) {
+    m5Value error = (mouse->wall.right_error - mouse->wall.left_error) / 100.0;
+    voltage_wall = m5pid_update(mouse->controller_wall, 0, error);
+  } else {
+    m5pid_reset(mouse->controller_wall);
+  }
   m5Value voltage_l = m5pid_update(mouse->controller_l, ref_vel_l, vel_l);
   m5Value voltage_r = m5pid_update(mouse->controller_r, ref_vel_r, vel_r);
 
   // モータを更新
-  voltage_l = clamp(-M5_MAX_VOLTAGE, M5_MAX_VOLTAGE, voltage_l);
-  voltage_r = clamp(-M5_MAX_VOLTAGE, M5_MAX_VOLTAGE, voltage_r);
+  voltage_l = clamp(-M5_MAX_VOLTAGE, M5_MAX_VOLTAGE, voltage_l + voltage_wall);
+  voltage_r = clamp(-M5_MAX_VOLTAGE, M5_MAX_VOLTAGE, voltage_r - voltage_wall);
   m5Value voltage_bat = M5_VBAT;
   m5motor_set_voltage(mouse->motor_l, voltage_l, voltage_bat);
   m5motor_set_voltage(mouse->motor_r, voltage_r, voltage_bat);
@@ -111,6 +119,8 @@ void m5mouse_update_target_velocity(m5Mouse mouse) {
       m5motion2_get_next_velocity(mouse->motion));
   } else if (mouse->current_run_op == M5_SLALOM) {
     /* TODO */
+  } else if (mouse->current_run_op == M5_NONE) {
+    /* DO NOTHING */
   }
 }
 

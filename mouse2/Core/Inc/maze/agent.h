@@ -3,10 +3,6 @@
 
 #include "maze.h"
 #include "mouse.h"
-#define M5_WALL_THRESH_L (300.0f)
-#define M5_WALL_THRESH_F (300.0f)
-#define M5_WALL_THRESH_F (300.0f)
-#define M5_WALL_THRESH_R (300.0f)
 #define M5_MAZE_WIDTH (180.0f)
 
 typedef enum {

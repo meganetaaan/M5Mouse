@@ -22,6 +22,7 @@ typedef enum {
   M5_STRAIGHT = 0x00U,
   M5_SLALOM = 0x01U,
   M5_SPIN = 0x02U,
+  M5_NONE = 0xFFU
 } M5RUN_OP;
 
 typedef float m5MotionValue;
@@ -57,6 +58,7 @@ typedef struct {
   m5WallInfo wall;
   m5PIDController controller_l;
   m5PIDController controller_r;
+  m5PIDController controller_wall;
   M5RUN_OP current_run_op;
   uint8_t active;
 } m5MouseRecord, *m5Mouse;

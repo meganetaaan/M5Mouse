@@ -27,6 +27,7 @@ typedef struct {
 } m5PIDControllerRecord, *m5PIDController;
 
 m5PIDController m5pid_constructor(float p, float i, float d, float saturation);
+void m5pid_reset(m5PIDController pid);
 m5Value m5pid_update(m5PIDController pid, m5Value target_value, m5Value current_value);
 
 #endif
