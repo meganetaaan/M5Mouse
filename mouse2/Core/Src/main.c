@@ -143,12 +143,9 @@ int main(void) {
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 
-  m5Maze maze = m5maze_constructor();
   // m5maze_load_from_array(maze, mazeData_maze);
   // m5maze_update_step_map(maze, (m5Index){7, 8});
   // m5maze_print_step_map(maze);
-  m5MazeAgent agent = m5mazeagent_constructor(maze, (m5Mouse)NULL);
-  // m5agent_search_run(agent, (m5Index){7, 8});
   // 開始
   m5main_init_mouse();
   m5mouse_start(mouse);
@@ -157,6 +154,8 @@ int main(void) {
   // 割り込みハンドラの開始
   HAL_TIM_Base_Start_IT(&htim7);
   HAL_TIM_Base_Start_IT(&htim6);
+  m5Maze maze = m5maze_constructor();
+  m5MazeAgent agent = m5mazeagent_constructor(maze, mouse);
   HAL_Delay(1000);
 
   /* USER CODE END 2 */
@@ -179,7 +178,9 @@ int main(void) {
           m5i2cbuffer[0] = m5i2c_count++;
           HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 100);
           m5wallsensor_calibrate(mouse->sensor);
-          HAL_Delay(300);
+          HAL_Delay(500);
+          m5agent_search_run(agent, (m5Index){7, 8});
+          /*
           float v = 300.0;
           m5mouse_straight(mouse, 90, v, v);
           for (int i = 0; i < 3; i++) {
@@ -191,11 +192,13 @@ int main(void) {
           m5mouse_straight(mouse, 180, v, v);
           m5mouse_straight(mouse, 90, v, 0);
           m5mouse_spin(mouse, 90);
+          */
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
           // TODO:
           m5wallsensor_calibrate(mouse->sensor);
+          HAL_Delay(300);
           break;
         default:
           m5i2cbuffer[0] = 0xFF;
@@ -205,7 +208,6 @@ int main(void) {
     } else {
       // printf("error %d\n", status);
     }
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
     // m5WallInfo wall = mouse->wall;
     // printf("\rwall... front: %u, left: %u, right: %u\n", wall.front, wall.left, wall.right);
     /* USER CODE END WHILE */
@@ -757,17 +759,18 @@ void m5main_init_mouse(void) {
   m5PIDController controller_r =
       m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
   m5PIDController controller_wall =
-      m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
+      m5pid_constructor(M5DEFAULT_WALL_PGAIN, M5DEFAULT_WALL_IGAIN, M5DEFAULT_WALL_DGAIN, 10);
   mouse->controller_l = controller_l;
   mouse->controller_r = controller_r;
   mouse->controller_wall = controller_wall;
 
   mouse->current_motion = m5motion_constructor(0, 0, 0, 0);
   mouse->target_motion = m5motion_constructor(0, 0, 400, 240);
-  mouse->cap_motion = m5motion_constructor(800, 240, 1000, 240);
+  mouse->cap_motion = m5motion_constructor(400, 120, 600, 240);
   mouse->current_coordinate = m5coordinate_constructor(0, 0);
   mouse->target_coordinate = m5coordinate_constructor(0, 0);
   mouse->current_run_op = M5_NONE;
+  mouse->is_wall_adjust_enabled = 1;
 }
 
 /* USER CODE END 4 */

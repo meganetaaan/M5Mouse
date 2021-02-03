@@ -1,8 +1,9 @@
 #include "maze/agent.h"
+#include "mouse.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "maze/maze_data.h"
-#define M5_SIMULATION
+// #define M5_SIMULATION
 
 extern const m5Index M5_DIRECTIONS[4];
 
@@ -29,38 +30,51 @@ void m5agent_advance(m5MazeAgent agent) {
 }
 
 void m5agent_straight(m5MazeAgent agent) {
+  float v = agent->mouse->cap_motion->vel;
   if (agent->mouse) {
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH, agent->mouse->cap_motion->vel, 0);
+    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH, v, v);
   }
   m5agent_advance(agent);
 }
 
 void m5agent_turn_left(m5MazeAgent agent) {
+  float v = agent->mouse->cap_motion->vel;
   if (agent->mouse) {
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, agent->mouse->cap_motion->vel, 0);
-    m5mouse_spin(agent->mouse, -90);
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, agent->mouse->cap_motion->vel, 0);
+    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, 0);
+    HAL_Delay(200);
+    m5mouse_spin(agent->mouse, 90);
+    HAL_Delay(200);
+    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v);
   }
   agent->direction = (agent->direction + 3) % 4;
   m5agent_advance(agent);
 }
 
 void m5agent_turn_right(m5MazeAgent agent) {
+  float v = agent->mouse->cap_motion->vel;
   if (agent->mouse) {
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, agent->mouse->cap_motion->vel, 0);
+    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, 0);
+    HAL_Delay(200);
     m5mouse_spin(agent->mouse, -90);
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, agent->mouse->cap_motion->vel, 0);
+    HAL_Delay(200);
+    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v);
   }
   agent->direction = (agent->direction + 1) % 4;
   m5agent_advance(agent);
 }
 
 void m5agent_turn_back(m5MazeAgent agent, uint8_t adjust) {
+  float v = agent->mouse->cap_motion->vel;
   if (agent->mouse) {
-    if (adjust) {
-      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, agent->mouse->cap_motion->vel, 0);
+    // if (adjust) {
+    if (0) {
+      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, 0);
+      HAL_Delay(200);
       m5mouse_spin(agent->mouse, 180);
-      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, agent->mouse->cap_motion->vel, 0);
+      HAL_Delay(200);
+      m5mouse_straight(agent->mouse, -M5_MAZE_WIDTH / 2 + 5, v, 0);
+      HAL_Delay(200);
+      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH - (M5_BODY_WIDTH + 1.2) / 2, v, v);
     } else {
       m5mouse_spin(agent->mouse, 180);
     }
@@ -76,15 +90,16 @@ m5Cell m5agent_get_wall(m5MazeAgent agent) {
 #else
   m5Mouse mouse = agent->mouse;
   uint8_t walls[4];
-  walls[0] = (mouse->sensor_fr->value + mouse->sensor_fr->value) / 2.0 > M5_WALL_THRESH_F;
-  walls[1] = mouse->sensor_r->value > M5_WALL_THRESH_R;
-  walls[2] = 0; // 進んできた方向なので壁は無い
-  walls[3] = mouse->sensor_l->value > M5_WALL_THRESH_L;
+  m5WallInfo wall = mouse->wall;
+  walls[0] = wall.front;
+  walls[1] = wall.right;
+  walls[2] = 0; // 進んできた方向なので壁は無いとみなす
+  walls[3] = wall.left;
   m5Cell cell = {0x00};
   m5Direction dir = agent->direction;
   for (uint8_t i = 0; i < 4; i++) {
     uint8_t shift = (dir + i) % 4;
-    cell.byte |= (0x01 << shift);
+    cell.byte |= (walls[i] << shift);
   }
   return cell;
 #endif
@@ -99,7 +114,6 @@ m5Direction m5agent_get_next_direction(m5MazeAgent agent) {
     uint8_t d = (agent->direction + i) % 4;
     m5Index idx = M5_DIRECTIONS[d];
     if (m5cell_is_wall(current_cell, d)) {
-      printf("%d is wall, ", d);
       continue;
     }
     uint8_t s = agent->maze->step_map[agent->position.y + idx.y][agent->position.x + idx.x];
@@ -108,7 +122,6 @@ m5Direction m5agent_get_next_direction(m5MazeAgent agent) {
       step = s;
     }
   }
-  printf("->");
   return (m5Direction)dir;
 }
 
@@ -121,15 +134,13 @@ void m5agent_search_run(m5MazeAgent agent, m5Index goal) {
 
   // 半歩進む
   if (mouse) {
-    m5mouse_straight(mouse, M5_MAZE_WIDTH / 2, mouse->cap_motion->vel / 2, 0);
+    m5mouse_straight(mouse, M5_MAZE_WIDTH / 2, mouse->cap_motion->vel / 2, mouse->cap_motion->vel / 2);
   }
   m5agent_advance(agent);
 
   // ゴールまで繰り返し
   uint16_t count = 0;
   while(agent->state != M5_AGENT_STATE_GOAL) {
-    printf("count: %u, position: (%u, %u), \n", count, agent->position.x, agent->position.y);
-    m5maze_print_step_map(maze);
     // 壁を測定
     m5Cell wall = m5agent_get_wall(agent);
     // 迷路をアップデート
@@ -141,21 +152,17 @@ void m5agent_search_run(m5MazeAgent agent, m5Index goal) {
     // 進む
     switch (next_dir) {
       case M5_DIR_FORWARD:
-        printf("going: forward...\n");
         m5agent_straight(agent);
         break;
       case M5_DIR_RIGHT:
-        printf("going: right...\n");
         m5agent_turn_right(agent);
         break;
       case M5_DIR_BACKWARD:
-        printf("going: backward...\n");
         // 進行方向に壁があれば背面調整をする
         adjust = m5cell_is_wall(wall, agent->direction);
         m5agent_turn_back(agent, adjust);
         break;
       case M5_DIR_LEFT:
-        printf("going: left...\n");
         m5agent_turn_left(agent);
         break;
     }
@@ -166,7 +173,7 @@ void m5agent_search_run(m5MazeAgent agent, m5Index goal) {
   }
   // セルの中央まで進む
   if (mouse) {
-    m5mouse_straight(mouse, M5_MAZE_WIDTH / 2, mouse->cap_motion->vel / 2, 0);
+    m5mouse_straight(mouse, M5_MAZE_WIDTH / 2, mouse->cap_motion->vel, 0);
   }
   // ゴール！
   return;

@@ -6,6 +6,10 @@
 #define M5DEFAULT_IGAIN (0.0020f)
 #define M5DEFAULT_DGAIN (0.0020f)
 
+#define M5DEFAULT_WALL_PGAIN (0.005f)
+#define M5DEFAULT_WALL_IGAIN (0.0005f)
+#define M5DEFAULT_WALL_DGAIN (0.0005f)
+
 typedef float m5Value;
 typedef struct {
   float p_gain;

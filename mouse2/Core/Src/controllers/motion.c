@@ -4,7 +4,7 @@
 #define ARM_MATH_CM4
 #include <arm_math.h>
 
-m5Motion2 m5motion2_constructor(float start_velocity, float max_velocity, float end_velocity, float distance, uint8_t direction, float accel, float frequency) {
+m5Motion2 m5motion2_constructor(float start_velocity, float max_velocity, float end_velocity, float distance, int8_t direction, float accel, float frequency) {
   if (distance < 0) {
     distance = -distance;
     direction = -direction;

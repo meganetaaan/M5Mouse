@@ -10,6 +10,7 @@
 // #include <controllers/command.h>
 
 #define M5_PULSE_PER_ROTATE (4096 * 4 * 5)
+#define M5_BODY_WIDTH 54
 
 typedef enum {
   M5_BRAKE = 0x00U,
@@ -60,6 +61,7 @@ typedef struct {
   m5PIDController controller_r;
   m5PIDController controller_wall;
   M5RUN_OP current_run_op;
+  uint8_t is_wall_adjust_enabled;
   uint8_t active;
 } m5MouseRecord, *m5Mouse;
 
