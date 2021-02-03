@@ -113,7 +113,7 @@ function changeCommand() {
     width: 240,
     height: 40,
     name: 'balloon',
-    string: `デバイスID: ${str}`
+    string: `デバイスID: ${str}`,
   })
   ap.add(b)
   ap.content('avatar').delegate('startSpeech')
@@ -129,6 +129,11 @@ if (global.button != null) {
   global.button.b.onChanged = function() {
     if (this.read()) {
       changeCommand()
+    }
+  }
+  global.button.c.onChanged = function() {
+    if (this.read()) {
+      mouse.calibrate()
     }
   }
 }
