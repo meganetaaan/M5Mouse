@@ -1,0 +1,9 @@
+{
+  "cmake.configureOnOpen": true,
+  "files.associations": {
+    "cstdio": "cpp",
+    "type_traits": "cpp",
+    "typeinfo": "cpp",
+    "limits": "cpp"
+  }
+}

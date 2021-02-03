@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "STM32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/lib/arm-none-eabi/include/**"
+            ],
+            "defines": [
+                "USE_HAL_DRIVER",
+                "STM32F405xx",
+                "F_CPU=72000000L",
+                "__weak=__attribute__((weak))"
+            ],
+            "compilerPath": "\"/usr/bin/arm-none-eabi-gcc\" -mthumb -mcpu=cortex-m4",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
