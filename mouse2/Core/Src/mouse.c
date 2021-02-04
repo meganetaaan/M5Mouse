@@ -1,12 +1,13 @@
 #include "mouse.h"
 
 #include <controllers/pid.h>
-#define ARM_MATH_CM4
+
+#include "global.h"
 #include <arm_math.h>
 #include <stdlib.h>
 
-#define M5_FREQUENCY (1000.0f)
-#define M5_DELTA (1.0f / M5_FREQUENCY)
+#define to_radians(degrees) ((degrees)*PI / 180.0)
+#define to_degrees(radians) ((radians)*180.0 / PI)
 
 float clamp(float min, float max, float value) {
   return fmin(fmax(value, min), max);
@@ -17,23 +18,6 @@ float clamp(float min, float max, float value) {
 #define M5_TREAD_WIDTH 40
 #define M5_MAX_VOLTAGE 6
 #define M5_VBAT (7.4f)
-
-m5Motion m5motion_constructor(m5MotionValue vel, m5MotionValue ang_vel,
-                              m5MotionValue accel, m5MotionValue ang_accel) {
-  m5Motion motion = malloc(sizeof(m5MotionRecord));
-  motion->accel = accel;
-  motion->ang_accel = ang_accel;
-  motion->vel = vel;
-  motion->ang_vel = ang_vel;
-  return motion;
-}
-
-m5Coordinate m5coordinate_constructor(m5MotionValue distance, m5MotionValue angle) {
-  m5Coordinate coord = malloc(sizeof(m5CoordinateRecord));
-  coord->distance = distance;
-  coord->angle = angle;
-  return coord;
-}
 
 void m5mouse_start(m5Mouse mouse) {
   m5encoder_start(mouse->encoder_l);
@@ -48,22 +32,27 @@ void m5mouse_start(m5Mouse mouse) {
 void m5mouse_apply_velocity(m5Mouse mouse) {
   // PID制御に食わせて速度、角速度の目標値を算出
   // モータの電圧値を計算
-  m5MotionValue ref_vel_l = mouse->target_motion->vel -
-                            (mouse->target_motion->ang_vel / 2.0);
-  m5MotionValue ref_vel_r = mouse->target_motion->vel +
-                            (mouse->target_motion->ang_vel / 2.0);
-  m5MotionValue vel_l = mouse->current_motion->vel -
-                        (mouse->current_motion->ang_vel / 2.0);
-  m5MotionValue vel_r = mouse->current_motion->vel +
-                        (mouse->current_motion->ang_vel / 2.0);
-  // TODO: 壁補正の補正項を計算する
+  m5Velocity target = mouse->target_velocity;
+  m5Velocity current = mouse->current_velocity;
+  float target_omega = target.omega * M5_TREAD_WIDTH / 4.0;
+  float current_omega = current.omega * M5_TREAD_WIDTH / 4.0;
+  float ref_vel_l = target.v + target_omega;
+  float ref_vel_r = target.v - target_omega;
+  float vel_l = current.v + current_omega;
+  float vel_r = current.v - current_omega;
+
+  // 壁補正の補正項を計算する
   m5Value voltage_wall = 0;
-  if (mouse->is_wall_adjust_enabled && mouse->current_run_op == M5_STRAIGHT && (mouse->wall.left || mouse->wall.right)) {
+  if (mouse->is_wall_adjust_enabled && mouse->motion != NULL &&
+      mouse->motion->type == M5_STRAIGHT &&
+      (mouse->wall.left || mouse->wall.right)) {
     m5Value error = 0;
     if (mouse->wall.right && mouse->wall.left) {
-      error = (mouse->wall.right_error - mouse->wall.left_error) / 100.0;
+      error = (mouse->wall.right_error - mouse->wall.left_error) *
+              M5_WALL_ADJUST_GAIN;
     } else {
-      error = ((mouse->wall.right_error - mouse->wall.left_error) * 2) / 100.0;
+      error = ((mouse->wall.right_error - mouse->wall.left_error) * 2) *
+              M5_WALL_ADJUST_GAIN;
     }
     voltage_wall = m5pid_update(mouse->controller_wall, 0, error);
   } else {
@@ -82,8 +71,8 @@ void m5mouse_apply_velocity(m5Mouse mouse) {
 
 void m5mouse_update(m5Mouse mouse) {
   m5mouse_update_wallinfo(mouse);
-  m5mouse_update_current_velocity(mouse);
-  m5mouse_update_current_orientation(mouse);
+  m5mouse_update_velocity(mouse);
+  m5mouse_update_position(mouse);
   m5mouse_update_target_velocity(mouse);
   m5mouse_apply_velocity(mouse);
 }
@@ -102,9 +91,9 @@ void m5mouse_update_wallinfo(m5Mouse mouse) {
   }
 }
 
-void m5mouse_update_current_orientation(m5Mouse mouse) {
-  mouse->current_coordinate->distance += mouse->current_motion->vel * M5_DELTA;
-  mouse->current_coordinate->angle += mouse->current_motion->ang_vel * M5_DELTA;
+void m5mouse_update_position(m5Mouse mouse) {
+  mouse->position.y = mouse->current_velocity.v * M5_DELTA;
+  mouse->position.theta = mouse->current_velocity.omega * M5_DELTA;
 }
 
 uint8_t m5mouse_is_moving(m5Mouse mouse) {
@@ -114,41 +103,24 @@ uint8_t m5mouse_is_moving(m5Mouse mouse) {
 void m5mouse_update_target_velocity(m5Mouse mouse) {
   // tar_velを更新（加速度*微小時間）
   if (!m5mouse_is_moving(mouse)) {
-    mouse->target_motion->vel = 0;
-    mouse->target_motion->ang_vel = 0;
-    mouse->current_motion->accel = 0;
-    mouse->current_motion->ang_accel = 0;
+    mouse->target_velocity = (m5Velocity){0, 0};
     return;
   }
-  if (mouse->current_run_op == M5_STRAIGHT) {
-    mouse->target_motion->vel = clamp(
-      -mouse->cap_motion->vel,
-      mouse->cap_motion->vel,
-      m5motion2_get_next_velocity(mouse->motion));
-    mouse->target_motion->ang_vel = 0;
-  } else if (mouse->current_run_op == M5_SPIN) {
-    mouse->target_motion->vel = 0;
-    mouse->target_motion->ang_vel = clamp(
-      -mouse->cap_motion->ang_vel,
-      mouse->cap_motion->ang_vel,
-      m5motion2_get_next_velocity(mouse->motion));
-  } else if (mouse->current_run_op == M5_SLALOM) {
-    /* TODO */
-  } else if (mouse->current_run_op == M5_NONE) {
-    /* DO NOTHING */
-  }
+  m5TrackTarget t = m5motion_get_next(mouse->motion);
+  // TODO:
+  // mouse->target_velocity =
 }
 
-void m5mouse_update_current_velocity(m5Mouse mouse) {
+void m5mouse_update_velocity(m5Mouse mouse) {
   // TODO: センサから情報を取得する
   int count_l = m5encoder_count(mouse->encoder_l);
   int count_r = m5encoder_count(mouse->encoder_r);
 
   // パルス数から車輪の速度への変換
-  float vel_r =
-      (count_r * 2.0 * PI * M5_WHEEL_RADIUS * M5_FREQUENCY) / M5_PULSE_PER_ROTATE;
-  float vel_l =
-      (count_l * 2.0 * PI * M5_WHEEL_RADIUS * M5_FREQUENCY) / M5_PULSE_PER_ROTATE;
+  float vel_r = (count_r * 2.0 * PI * M5_WHEEL_RADIUS * M5_FREQUENCY) /
+                M5_PULSE_PER_ROTATE;
+  float vel_l = (count_l * 2.0 * PI * M5_WHEEL_RADIUS * M5_FREQUENCY) /
+                M5_PULSE_PER_ROTATE;
 
   // 車輪の速度から車体の速度、角速度への変換
   float vel = (vel_r + vel_l) / 2;
@@ -157,53 +129,40 @@ void m5mouse_update_current_velocity(m5Mouse mouse) {
   if (-1.0 < ang_vel && ang_vel < 1.0) {
     ang_vel = 0;
   }
-  ang_vel = (ang_vel / 360.0) * -1 * PI * M5_TREAD_WIDTH;
+  ang_vel = to_radians(ang_vel);
+  m5Velocity v_meajured = (m5Velocity){vel, ang_vel};
 
   // ローパスフィルタで更新
-  mouse->current_motion->vel = mouse->current_motion->vel * 0.9 + vel * 0.1;
-  mouse->current_motion->ang_vel =
-      mouse->current_motion->ang_vel * 0.9 + ang_vel * 0.1;
+  mouse->current_velocity =
+      m5v_add(m5v_mul(mouse->current_velocity, 0.9), m5v_mul(v_meajured, 0.1));
   return;
 };
 
-void m5mouse_straight(m5Mouse mouse, float distance, float max_velocity, float end_velocity) {
-  int8_t direction = 1;
-  if (distance < 0) {
-    distance = -distance;
-    direction = -1;
-  }
-  mouse->current_coordinate->distance = 0;
-  mouse->current_coordinate->angle = 0;
-  mouse->motion = m5motion2_constructor(mouse->current_motion->vel, max_velocity, end_velocity, distance, direction, mouse->cap_motion->accel, M5_FREQUENCY);
-  mouse->current_run_op = M5_STRAIGHT;
-  while(m5mouse_is_moving(mouse) && mouse->current_coordinate->distance < distance) {
+void m5mouse_straight(m5Mouse mouse, float distance, float max_velocity,
+                      float end_velocity) {
+  m5Position destination = (m5Position){0, distance, 0};
+  m5Velocity max = (m5Velocity){max_velocity, 0};
+  m5Velocity end = (m5Velocity){end_velocity, 0};
+  mouse->motion =
+      m5motion_constructor(M5_STRAIGHT, mouse->current_velocity, max, end,
+                           destination, mouse->cap_accel, M5_FREQUENCY);
+  while (m5mouse_is_moving(mouse)) {
     HAL_Delay(1);
   }
-  m5motion2_destructor(mouse->motion);
+  m5motion_destructor(mouse->motion);
   mouse->motion = NULL;
   return;
 }
 
-void m5mouse_spin(m5Mouse mouse, float angle) {
-  uint8_t direction = 1;
-  if (angle < 0) {
-    angle = -angle;
-    direction = -1;
-  }
-  angle = PI * M5_TREAD_WIDTH * (angle / 360);
-  mouse->current_coordinate->distance = 0;
-  mouse->current_coordinate->angle = 0;
-  mouse->current_run_op = M5_SPIN;
-  mouse->motion = m5motion2_constructor(0, mouse->cap_motion->ang_vel, 10, angle, direction, mouse->cap_motion->ang_accel, M5_FREQUENCY);
-  while(m5mouse_is_moving(mouse) && mouse->current_coordinate->angle < angle) {
+void m5mouse_spin(m5Mouse mouse, float degrees) {
+  m5Position destination = (m5Position){0, 0, to_radians(degrees)};
+  mouse->motion = m5motion_constructor(
+      M5_SPIN, (m5Velocity){0, 0}, mouse->cap_velocity, (m5Velocity){0, 0},
+      destination, mouse->cap_accel, M5_FREQUENCY);
+  while (m5mouse_is_moving(mouse)) {
     HAL_Delay(1);
   }
-  m5motion2_destructor(mouse->motion);
+  m5motion_destructor(mouse->motion);
   mouse->motion = NULL;
-  return;
-}
-
-void m5mouse_set_operation(m5Mouse mouse) {
-  // TODO
   return;
 }

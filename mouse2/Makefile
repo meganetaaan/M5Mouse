@@ -42,6 +42,7 @@ Core/Src/main.c \
 Core/Src/mouse.c \
 Core/Src/delay_us.c \
 Core/Src/global.c \
+Core/Src/controllers/odometry.c \
 Core/Src/controllers/pid.c \
 Core/Src/controllers/motion.c \
 Core/Src/drivers/gyro.c \
@@ -54,6 +55,7 @@ Core/Src/maze/maze_data.c \
 Core/Src/maze/agent.c \
 Core/Src/pins/spi.c \
 Core/Src/pins/timer.c \
+Core/Src/common/geometry.c \
 Core/Src/stm32f4xx_it.c \
 Core/Src/stm32f4xx_hal_msp.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
@@ -126,8 +128,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F405xx
-
+-DSTM32F405xx \
+-DARM_MATH_CM7
 
 # AS includes
 AS_INCLUDES =

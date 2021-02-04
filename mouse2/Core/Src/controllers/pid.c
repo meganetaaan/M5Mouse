@@ -1,5 +1,6 @@
 #include <stm32f4xx_hal.h>
 #include "controllers/pid.h"
+#include "global.h"
 #include <stdlib.h>
 
 m5PIDController m5pid_constructor(float p, float i, float d, float saturation) {
@@ -7,6 +8,7 @@ m5PIDController m5pid_constructor(float p, float i, float d, float saturation) {
   config->p_gain = p;
   config->i_gain = i;
   config->d_gain = d;
+  config->delta = M5_DELTA;
   config->i_saturation = saturation;
   m5PIDContext ctx = malloc(sizeof(m5PIDContextRecord));
   m5PIDController controller = malloc(sizeof(m5PIDControllerRecord));
@@ -27,14 +29,15 @@ m5Value m5pid_update(m5PIDController pid, m5Value target_value, m5Value current_
     pid->context->last_value = current_value;
     pid->context->initialized = 1;
   }
+  float delta = pid->config->delta;
   m5Value diff = target_value - current_value;
-  m5Value integrated = pid->context->integrated_value += diff;
+  m5Value integrated = pid->context->integrated_value += diff * delta;
   if (integrated > pid->config->i_saturation) {
     integrated = pid->config->i_saturation;
   } else if (integrated < -pid->config->i_saturation) {
     integrated = -pid->config->i_saturation;
   }
-  m5Value derivative = current_value - pid->context->last_value;
+  m5Value derivative = (current_value - pid->context->last_value) / delta;
 
   // calculate value
   float p = diff * pid->config->p_gain;

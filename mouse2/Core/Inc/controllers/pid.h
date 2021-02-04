@@ -5,7 +5,6 @@
 #define M5DEFAULT_PGAIN (0.020f)
 #define M5DEFAULT_IGAIN (0.0020f)
 #define M5DEFAULT_DGAIN (0.0020f)
-
 #define M5DEFAULT_WALL_PGAIN (0.005f)
 #define M5DEFAULT_WALL_IGAIN (0.0005f)
 #define M5DEFAULT_WALL_DGAIN (0.0005f)
@@ -16,6 +15,7 @@ typedef struct {
   float i_gain;
   float d_gain;
   float i_saturation;
+  float delta;
 } m5PIDConfigurationRecord, *m5PIDConfiguration;
 
 typedef struct {

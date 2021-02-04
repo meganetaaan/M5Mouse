@@ -33,6 +33,8 @@
 #include <mouse.h>
 #include <stdio.h>
 #include <stdlib.h>
+// #define ARM_MATH_CM4
+#include <arm_math.h>
 
 #include "maze/agent.h"
 #include "maze/maze.h"
@@ -143,13 +145,9 @@ int main(void) {
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 
-  // m5maze_load_from_array(maze, mazeData_maze);
-  // m5maze_update_step_map(maze, (m5Index){7, 8});
-  // m5maze_print_step_map(maze);
   // 開始
   m5main_init_mouse();
   m5mouse_start(mouse);
-  // m5encoder_start(mouse->encoder_l); m5encoder_start(mouse->encoder_r);
 
   // 割り込みハンドラの開始
   HAL_TIM_Base_Start_IT(&htim7);
@@ -177,10 +175,9 @@ int main(void) {
         case M5_REGISTER_TEST:
           m5i2cbuffer[0] = m5i2c_count++;
           HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 100);
-          m5wallsensor_calibrate(mouse->sensor);
+          // m5wallsensor_calibrate(mouse->sensor);
           HAL_Delay(500);
-          m5agent_search_run(agent, (m5Index){7, 8});
-          /*
+          // m5agent_search_run(agent, (m5Index){7, 8});
           float v = 300.0;
           m5mouse_straight(mouse, 90, v, v);
           for (int i = 0; i < 3; i++) {
@@ -192,7 +189,6 @@ int main(void) {
           m5mouse_straight(mouse, 180, v, v);
           m5mouse_straight(mouse, 90, v, 0);
           m5mouse_spin(mouse, 90);
-          */
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
@@ -208,8 +204,6 @@ int main(void) {
     } else {
       // printf("error %d\n", status);
     }
-    // m5WallInfo wall = mouse->wall;
-    // printf("\rwall... front: %u, left: %u, right: %u\n", wall.front, wall.left, wall.right);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -764,12 +758,11 @@ void m5main_init_mouse(void) {
   mouse->controller_r = controller_r;
   mouse->controller_wall = controller_wall;
 
-  mouse->current_motion = m5motion_constructor(0, 0, 0, 0);
-  mouse->target_motion = m5motion_constructor(0, 0, 400, 240);
-  mouse->cap_motion = m5motion_constructor(400, 120, 600, 240);
-  mouse->current_coordinate = m5coordinate_constructor(0, 0);
-  mouse->target_coordinate = m5coordinate_constructor(0, 0);
-  mouse->current_run_op = M5_NONE;
+  mouse->current_velocity = (m5Velocity){0, 0};
+  mouse->target_velocity = (m5Velocity){0, 0};
+  mouse->cap_velocity = (m5Velocity){400, 1 * PI};
+  mouse->cap_accel = (m5Accel){600, 2 * PI};
+  mouse->position = (m5Position){0, 0};
   mouse->is_wall_adjust_enabled = 1;
 }
 

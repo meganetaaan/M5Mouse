@@ -4,6 +4,7 @@
     "cstdio": "cpp",
     "type_traits": "cpp",
     "typeinfo": "cpp",
-    "limits": "cpp"
+    "limits": "cpp",
+    "geometry.h": "c"
   }
 }

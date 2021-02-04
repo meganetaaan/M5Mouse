@@ -30,7 +30,7 @@ void m5agent_advance(m5MazeAgent agent) {
 }
 
 void m5agent_straight(m5MazeAgent agent) {
-  float v = agent->mouse->cap_motion->vel;
+  float v = agent->mouse->cap_velocity.v;
   if (agent->mouse) {
     m5mouse_straight(agent->mouse, M5_MAZE_WIDTH, v, v);
   }
@@ -38,11 +38,11 @@ void m5agent_straight(m5MazeAgent agent) {
 }
 
 void m5agent_turn_left(m5MazeAgent agent) {
-  float v = agent->mouse->cap_motion->vel;
+  float v = agent->mouse->cap_velocity.v;
   if (agent->mouse) {
     m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, 0);
     HAL_Delay(200);
-    m5mouse_spin(agent->mouse, 90);
+    m5mouse_spin(agent->mouse, -90);
     HAL_Delay(200);
     m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v);
   }
@@ -51,11 +51,11 @@ void m5agent_turn_left(m5MazeAgent agent) {
 }
 
 void m5agent_turn_right(m5MazeAgent agent) {
-  float v = agent->mouse->cap_motion->vel;
+  float v = agent->mouse->cap_velocity.v;
   if (agent->mouse) {
     m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, 0);
     HAL_Delay(200);
-    m5mouse_spin(agent->mouse, -90);
+    m5mouse_spin(agent->mouse, 90);
     HAL_Delay(200);
     m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v);
   }
@@ -64,7 +64,7 @@ void m5agent_turn_right(m5MazeAgent agent) {
 }
 
 void m5agent_turn_back(m5MazeAgent agent, uint8_t adjust) {
-  float v = agent->mouse->cap_motion->vel;
+  float v = agent->mouse->cap_velocity.v;
   if (agent->mouse) {
     // if (adjust) {
     if (0) {
@@ -134,7 +134,8 @@ void m5agent_search_run(m5MazeAgent agent, m5Index goal) {
 
   // 半歩進む
   if (mouse) {
-    m5mouse_straight(mouse, M5_MAZE_WIDTH / 2, mouse->cap_motion->vel / 2, mouse->cap_motion->vel / 2);
+    m5mouse_straight(mouse, M5_MAZE_WIDTH / 2, mouse->cap_velocity.v / 2,
+                     mouse->cap_velocity.v / 2);
   }
   m5agent_advance(agent);
 
@@ -173,7 +174,7 @@ void m5agent_search_run(m5MazeAgent agent, m5Index goal) {
   }
   // セルの中央まで進む
   if (mouse) {
-    m5mouse_straight(mouse, M5_MAZE_WIDTH / 2, mouse->cap_motion->vel, 0);
+    m5mouse_straight(mouse, M5_MAZE_WIDTH / 2, mouse->cap_velocity.v, 0);
   }
   // ゴール！
   return;
