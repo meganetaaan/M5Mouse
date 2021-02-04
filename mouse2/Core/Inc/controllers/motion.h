@@ -4,6 +4,7 @@
 
 #include "common/geometry.h"
 #include "controllers/odometry.h"
+#include "common/queue.h"
 
 typedef enum {
   M5_STRAIGHT = 0x00U,
@@ -40,6 +41,11 @@ typedef struct {
   m5Position destination;
   uint8_t is_end;
 } m5MotionRecord, *m5Motion;
+
+typedef m5Queue m5MotionQueue;
+
+m5Motion m5motionqueue_dequeue(m5MotionQueue queue);
+void m5motionqueue_enqueue(m5MotionQueue queue, m5Motion motion);
 
 m5Trapezoid m5trapezoid_constructor(float Vs, float Vm, float Ve, float L,
                                     float a, float freq);

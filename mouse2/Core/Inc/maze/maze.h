@@ -34,19 +34,19 @@ typedef struct {
   size_t idx_first;
   size_t idx_last;
   m5Index array[M5_MAZE_SIZE * M5_MAZE_SIZE];
-} m5QueueRecord, *m5Queue;
+} m5IdxQueueRecord, *m5IdxQueue;
 
 // direction
 uint8_t m5cell_is_wall(m5Cell d, uint8_t i);
 uint8_t m5cell_num_walls(m5Cell d);
 
 // queue
-m5Queue m5queue_constructor();
-void m5queue_destructor(m5Queue queue);
-void m5queue_clear(m5Queue queue);
-uint8_t m5queue_enqueue(m5Queue queue, m5Index value);
-m5Index m5queue_dequeue(m5Queue queue);
-uint8_t m5queue_is_empty(m5Queue queue);
+m5IdxQueue m5idxqueue_constructor();
+void m5idxqueue_destructor(m5IdxQueue queue);
+void m5idxqueue_clear(m5IdxQueue queue);
+uint8_t m5idxqueue_enqueue(m5IdxQueue queue, m5Index value);
+m5Index m5idxqueue_dequeue(m5IdxQueue queue);
+uint8_t m5idxqueue_is_empty(m5IdxQueue queue);
 
 // maze
 m5Maze m5maze_constructor(void);

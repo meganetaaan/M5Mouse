@@ -55,6 +55,13 @@ float m5trapezoid_get_next(m5Trapezoid tr) {
   }
 }
 
+m5Motion m5motionqueue_dequeue(m5MotionQueue queue) {
+  return (m5Motion)m5queue_dequeue(queue);
+}
+void m5motionqueue_enqueue(m5MotionQueue queue, m5Motion motion) {
+  m5queue_enqueue(queue, (void *)motion);
+}
+
 m5Motion m5motion_constructor(m5MotionType type, m5Velocity start_velocity,
                               m5Velocity max_velocity, m5Velocity end_velocity,
                               m5Position destination, m5Accel accel,

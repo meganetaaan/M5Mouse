@@ -36,10 +36,10 @@
 // #define ARM_MATH_CM4
 #include <arm_math.h>
 
+#include "controllers/motion.h"
 #include "maze/agent.h"
 #include "maze/maze.h"
 #include "maze/maze_data.h"
-#include "controllers/motion.h"
 
 /* USER CODE END Includes */
 
@@ -109,9 +109,9 @@ extern uint8_t m5i2cbuffer[256];
  */
 int main(void) {
   /* USER CODE BEGIN 1 */
-// #ifdef DEBUG
+  // #ifdef DEBUG
   // initialise_monitor_handles();
-// #endif
+  // #endif
 
   /* USER CODE END 1 */
 
@@ -179,7 +179,10 @@ int main(void) {
           HAL_Delay(500);
           // m5agent_search_run(agent, (m5Index){7, 8});
           float v = 300.0;
-          m5mouse_straight(mouse, 90, v, v);
+          m5mouse_straight(mouse, 60, v, 0);
+          m5mouse_spin(mouse, 30);
+          m5mouse_spin(mouse, -30);
+          /*
           for (int i = 0; i < 3; i++) {
             m5mouse_straight(mouse, 180, v, v);
             m5mouse_straight(mouse, 90, v, 0);
@@ -189,6 +192,7 @@ int main(void) {
           m5mouse_straight(mouse, 180, v, v);
           m5mouse_straight(mouse, 90, v, 0);
           m5mouse_spin(mouse, 90);
+          */
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
@@ -745,25 +749,27 @@ void m5main_init_mouse(void) {
   sensor_r->led_pin = GPIO_PIN_0;
   m5sensor_init(sensor_r);
 
-  m5WallSensor ws = m5wallsensor_constructor(sensor_l, sensor_fl, sensor_fr, sensor_r);
+  m5WallSensor ws =
+      m5wallsensor_constructor(sensor_l, sensor_fl, sensor_fr, sensor_r);
   mouse->sensor = ws;
 
   m5PIDController controller_l =
       m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
   m5PIDController controller_r =
       m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
-  m5PIDController controller_wall =
-      m5pid_constructor(M5DEFAULT_WALL_PGAIN, M5DEFAULT_WALL_IGAIN, M5DEFAULT_WALL_DGAIN, 10);
+  m5PIDController controller_wall = m5pid_constructor(
+      M5DEFAULT_WALL_PGAIN, M5DEFAULT_WALL_IGAIN, M5DEFAULT_WALL_DGAIN, 10);
   mouse->controller_l = controller_l;
   mouse->controller_r = controller_r;
   mouse->controller_wall = controller_wall;
+  mouse->motion_queue = m5queue_constructor();
 
   mouse->current_velocity = (m5Velocity){0, 0};
   mouse->target_velocity = (m5Velocity){0, 0};
   mouse->cap_velocity = (m5Velocity){400, 1 * PI};
   mouse->cap_accel = (m5Accel){600, 2 * PI};
   mouse->position = (m5Position){0, 0};
-  mouse->is_wall_adjust_enabled = 1;
+  mouse->is_wall_adjust_enabled = 0;
 }
 
 /* USER CODE END 4 */

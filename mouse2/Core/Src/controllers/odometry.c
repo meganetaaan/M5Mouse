@@ -1,8 +1,8 @@
-
-#include "common/geometry.h"
+#include <stdlib.h>
 #include <stm32f405xx.h>
 #include <arm_math.h>
-#include <stdlib.h>
+
+#include "common/geometry.h"
 
 typedef struct {
   m5Position position;
@@ -30,7 +30,7 @@ void m5odometry_destructor(m5Odometry odo) {
 
 void m5odometry_update(m5Odometry odo, m5Velocity v) {
   m5Position pos = odo->position;
-  float dx = -arm_sin_f32(pos.theta) * v.v;
+  float dx = -arm_sin_f32((float32_t)pos.theta) * v.v;
   float dy = arm_cos_f32(pos.theta) * v.v;
   if (!odo->initialized) {
     odo->prev_dx = dx;

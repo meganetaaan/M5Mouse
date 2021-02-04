@@ -15,6 +15,7 @@
 
 typedef struct {
   m5Motion motion;
+  m5MotionQueue motion_queue;
   m5Velocity current_velocity;
   m5Velocity target_velocity;
   m5Velocity cap_velocity;
@@ -46,7 +47,6 @@ typedef struct {
 m5MotionOp m5move_straight_constructor(float distance, float start_velocity, float max_velocity, float end_velocity);
 m5Velocity m5move_next(m5MotionOp op);
 uint8_t m5move_is_end(m5MotionOp op);
-
 m5Mouse m5mouse(void);
 void m5mouse_start(m5Mouse mouse);
 void m5mouse_update(m5Mouse mouse);

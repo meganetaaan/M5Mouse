@@ -5,6 +5,7 @@
     "type_traits": "cpp",
     "typeinfo": "cpp",
     "limits": "cpp",
-    "geometry.h": "c"
+    "geometry.h": "c",
+    "stm32f405xx.h": "c"
   }
 }

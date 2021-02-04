@@ -1,10 +1,10 @@
 #include "mouse.h"
 
+#include <arm_math.h>
 #include <controllers/pid.h>
+#include <stdlib.h>
 
 #include "global.h"
-#include <arm_math.h>
-#include <stdlib.h>
 
 #define to_radians(degrees) ((degrees)*PI / 180.0)
 #define to_degrees(radians) ((radians)*180.0 / PI)
@@ -103,12 +103,20 @@ uint8_t m5mouse_is_moving(m5Mouse mouse) {
 void m5mouse_update_target_velocity(m5Mouse mouse) {
   // tar_velを更新（加速度*微小時間）
   if (!m5mouse_is_moving(mouse)) {
-    mouse->target_velocity = (m5Velocity){0, 0};
-    return;
+    if (mouse->motion != NULL) {
+      m5motion_destructor(mouse->motion);
+      mouse->motion = NULL;
+    }
+    if (m5queue_is_empty(mouse->motion_queue)) {
+      mouse->target_velocity = (m5Velocity){0, 0};
+      return;
+    } else {
+      mouse->motion = m5motionqueue_dequeue(mouse->motion_queue);
+    }
   }
   m5TrackTarget t = m5motion_get_next(mouse->motion);
   // TODO:
-  // mouse->target_velocity =
+  mouse->target_velocity = t.velocity;
 }
 
 void m5mouse_update_velocity(m5Mouse mouse) {
@@ -143,26 +151,19 @@ void m5mouse_straight(m5Mouse mouse, float distance, float max_velocity,
   m5Position destination = (m5Position){0, distance, 0};
   m5Velocity max = (m5Velocity){max_velocity, 0};
   m5Velocity end = (m5Velocity){end_velocity, 0};
-  mouse->motion =
+  m5motionqueue_enqueue(
+      mouse->motion_queue,
       m5motion_constructor(M5_STRAIGHT, mouse->current_velocity, max, end,
-                           destination, mouse->cap_accel, M5_FREQUENCY);
-  while (m5mouse_is_moving(mouse)) {
-    HAL_Delay(1);
-  }
-  m5motion_destructor(mouse->motion);
-  mouse->motion = NULL;
+                           destination, mouse->cap_accel, M5_FREQUENCY));
   return;
 }
 
 void m5mouse_spin(m5Mouse mouse, float degrees) {
   m5Position destination = (m5Position){0, 0, to_radians(degrees)};
-  mouse->motion = m5motion_constructor(
-      M5_SPIN, (m5Velocity){0, 0}, mouse->cap_velocity, (m5Velocity){0, 0},
-      destination, mouse->cap_accel, M5_FREQUENCY);
-  while (m5mouse_is_moving(mouse)) {
-    HAL_Delay(1);
-  }
-  m5motion_destructor(mouse->motion);
-  mouse->motion = NULL;
+  m5motionqueue_enqueue(
+      mouse->motion_queue,
+      m5motion_constructor(M5_SPIN, (m5Velocity){0, 0}, mouse->cap_velocity,
+                           (m5Velocity){0, 0}, destination, mouse->cap_accel,
+                           M5_FREQUENCY));
   return;
 }
