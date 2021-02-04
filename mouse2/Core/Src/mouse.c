@@ -58,8 +58,13 @@ void m5mouse_apply_velocity(m5Mouse mouse) {
                         (mouse->current_motion->ang_vel / 2.0);
   // TODO: 壁補正の補正項を計算する
   m5Value voltage_wall = 0;
-  if (mouse->current_run_op == M5_STRAIGHT && mouse->wall.left && mouse->wall.right) {
-    m5Value error = (mouse->wall.right_error - mouse->wall.left_error) / 100.0;
+  if (mouse->is_wall_adjust_enabled && mouse->current_run_op == M5_STRAIGHT && (mouse->wall.left || mouse->wall.right)) {
+    m5Value error = 0;
+    if (mouse->wall.right && mouse->wall.left) {
+      error = (mouse->wall.right_error - mouse->wall.left_error) / 100.0;
+    } else {
+      error = ((mouse->wall.right_error - mouse->wall.left_error) * 2) / 100.0;
+    }
     voltage_wall = m5pid_update(mouse->controller_wall, 0, error);
   } else {
     m5pid_reset(mouse->controller_wall);
@@ -85,6 +90,16 @@ void m5mouse_update(m5Mouse mouse) {
 
 void m5mouse_update_wallinfo(m5Mouse mouse) {
   mouse->wall = m5wallsensor_update(mouse->sensor);
+  if (mouse->wall.front) {
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
+  } else {
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
+  }
+  if (mouse->wall.right) {
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
+  } else {
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
+  }
 }
 
 void m5mouse_update_current_orientation(m5Mouse mouse) {
@@ -152,7 +167,7 @@ void m5mouse_update_current_velocity(m5Mouse mouse) {
 };
 
 void m5mouse_straight(m5Mouse mouse, float distance, float max_velocity, float end_velocity) {
-  uint8_t direction = 1;
+  int8_t direction = 1;
   if (distance < 0) {
     distance = -distance;
     direction = -1;

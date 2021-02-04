@@ -24,13 +24,13 @@ uint16_t m5sensor_read(m5Sensor sensor) {
     return -1;
   }
   HAL_GPIO_WritePin(sensor->led_port, sensor->led_pin, GPIO_PIN_SET);
-  delay_us(3);
+  delay_us(30);
   HAL_ADC_Start(handler);
   HAL_ADC_PollForConversion(handler, 1000);
   uint16_t adcValueOn = HAL_ADC_GetValue(handler);
 
   HAL_GPIO_WritePin(sensor->led_port, sensor->led_pin, GPIO_PIN_RESET);
-  delay_us(3);
+  delay_us(30);
   HAL_ADC_Start(handler);
   HAL_ADC_PollForConversion(handler, 1000);
   uint16_t adcValueOff = HAL_ADC_GetValue(handler);

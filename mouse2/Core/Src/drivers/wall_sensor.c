@@ -14,6 +14,7 @@ m5WallSensor m5wallsensor_constructor(m5Sensor sensor_l, m5Sensor sensor_fl, m5S
   wall_sensor->offset_r = 0;
   wall_sensor->offset_sum_l = 0;
   wall_sensor->offset_sum_r = 0;
+  wall_sensor->offset_count = 0;
   wall_sensor->threshold_l = M5_WALL_THRESH_L;
   wall_sensor->threshold_f = M5_WALL_THRESH_F;
   wall_sensor->threshold_r = M5_WALL_THRESH_R;
@@ -43,7 +44,7 @@ m5WallInfo m5wallsensor_update(m5WallSensor ws) {
       ws->offset_r = ws->offset_sum_r / M5_WALL_OFFSET_COUNT;
     }
   }
-  float fs = (ws->sensor_fr->value + ws->sensor_fr->value) / 2.0;
+  uint16_t fs = (ws->sensor_fr->value + ws->sensor_fr->value) / 2;
   if (fs < ws->threshold_f) {
     ws->detected_frame_count_f = 0;
   } else {
@@ -52,7 +53,7 @@ m5WallInfo m5wallsensor_update(m5WallSensor ws) {
       ws->detected_frame_count_f = M5_WALL_COUNT;
     }
   }
-  float ls = ws->sensor_l->value;
+  uint16_t ls = ws->sensor_l->value;
   if (ls < ws->threshold_l) {
     ws->detected_frame_count_l = 0;
   } else {
@@ -61,7 +62,7 @@ m5WallInfo m5wallsensor_update(m5WallSensor ws) {
       ws->detected_frame_count_l = M5_WALL_COUNT;
     }
   }
-  float rs = ws->sensor_r->value;
+  uint16_t rs = ws->sensor_r->value;
   if (rs < ws->threshold_r) {
     ws->detected_frame_count_r = 0;
   } else {
@@ -74,7 +75,7 @@ m5WallInfo m5wallsensor_update(m5WallSensor ws) {
   info.front = ws->detected_frame_count_f == M5_WALL_COUNT;
   info.left = ws->detected_frame_count_l == M5_WALL_COUNT;
   info.right = ws->detected_frame_count_r == M5_WALL_COUNT;
-  info.left_error = ls - ws->offset_l;
-  info.right_error = rs - ws->offset_r;
+  info.left_error = info.left ? ls - ws->offset_l : 0;
+  info.right_error = info.right ? rs - ws->offset_r : 0;
   return info;
 }

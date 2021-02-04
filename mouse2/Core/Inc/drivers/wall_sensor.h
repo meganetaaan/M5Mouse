@@ -2,10 +2,10 @@
 #define _M5_DRIVER_WALL_SENSOR_H_
 #include "sensor.h"
 
-#define M5_WALL_THRESH_L (1500.0f)
-#define M5_WALL_THRESH_F (2000.0f)
-#define M5_WALL_THRESH_R (2000.0f)
-#define M5_WALL_COUNT (4)
+#define M5_WALL_THRESH_L (780)
+#define M5_WALL_THRESH_F (560)
+#define M5_WALL_THRESH_R (1050)
+#define M5_WALL_COUNT (2)
 #define M5_WALL_OFFSET_COUNT (100)
 
 typedef struct {

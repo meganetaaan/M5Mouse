@@ -254,6 +254,7 @@ void TIM6_DAC_IRQHandler(void)
     m5mouse_update(mouse);
   }
   m5timerCount++;
+  /*
   if (m5timerCount % 500 == 0) {
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
     // printf("\n\n");
@@ -262,6 +263,7 @@ void TIM6_DAC_IRQHandler(void)
     // printf("current_motion->vel: %f, ang_vel: %f, accel: %f, ang_accel: %f\n", mouse->current_motion->vel, mouse->current_motion->ang_vel, mouse->current_motion->accel, mouse->current_motion->ang_accel);
     // printf("target_motion->vel: %f, ang_vel: %f, accel: %f, ang_accel: %f\n", mouse->target_motion->vel, mouse->target_motion->ang_vel, mouse->target_motion->accel, mouse->target_motion->ang_accel);
   }
+  8?
   /*
   if (m5timerCount % 100 == 0) {
     printf("\n\n");
@@ -302,8 +304,7 @@ void TIM7_IRQHandler(void)
   }
   // if (m5sensor_count % 4000 == 0) {
   //   printf(
-  //       "m5sensor_count: %u, gyro: %f, sensor...l: %u, fl: %u, fr: %u, r: "
-  //       "%u\r\n",
+  //       "m5sensor_count: %u, gyro: %f, sensor...l: %u, fl: %u, fr: %u, r: %u\r\n",
   //       m5sensor_count, mouse->gyro->ang_vel, mouse->sensor->sensor_l->value,
   //       mouse->sensor->sensor_fl->value, mouse->sensor->sensor_fr->value,
   //       mouse->sensor->sensor_r->value);
