@@ -7,6 +7,7 @@
 #define M5_REGISTER_CALIBRATE 0xf0
 #define M5_VALUE_WHO_AM_I 0x64
 #define M5_FREQUENCY (1000.0f)
+#define M5_TARGET_FREQUENCY (1000.0f)
 #define M5_DELTA (1.0f / M5_FREQUENCY)
 #define M5_CELL_WIDTH (180.0f)
 

@@ -66,9 +66,23 @@ void m5motion_initialize_slalom(m5Motion motion, m5Velocity start_velocity,
                                 m5Velocity max_velocity,
                                 m5Velocity end_velocity, m5Position destination,
                                 m5Accel accel, float frequency) {
+  float theta = destination.theta;
+  int8_t direction = 1;
+  if (theta < 0) {
+    theta = -theta;
+    direction = -1;
+  }
+  motion->direction = direction;
+  /*
+  if (destination.theta < 0) {
+    destination.theta = -destination.theta;
+    destination.x = -destination.x;
+    direction = -direction;
+  }
+  */
   m5Trapezoid tr = m5trapezoid_constructor(
       start_velocity.omega, max_velocity.omega, end_velocity.omega,
-      destination.theta, accel.alpha, frequency);
+      theta, accel.alpha, frequency);
   m5Odometry odo = motion->odometry;
   m5odometry_reset(odo);
   size_t count = 0;
@@ -81,6 +95,7 @@ void m5motion_initialize_slalom(m5Motion motion, m5Velocity start_velocity,
   if (abs(odo->position.x) > abs(destination.x)) {
     // printf("error");
   }
+  odo->position.x *= direction;
 
   float x_diff = destination.x - odo->position.x;
   float post_curve = x_diff / arm_sin_f32(destination.theta);
@@ -106,31 +121,29 @@ m5Motion m5motion_constructor(m5MotionType type, m5Velocity start_velocity,
   motion->max_velocity = max_velocity;
   motion->end_velocity = end_velocity;
   if (type == M5_STRAIGHT) {
+    float y = destination.y;
     if (destination.y < 0) {
-      destination.y = -destination.y;
+      y = -y;
       direction = -direction;
     }
+    motion->direction = direction;
     motion->trapezoid = m5trapezoid_constructor(
-        start_velocity.v, max_velocity.v, end_velocity.v, destination.y,
+        start_velocity.v, max_velocity.v, end_velocity.v, y,
         accel.a, frequency);
   } else if (type == M5_SPIN) {
+    float theta = destination.theta;
     if (destination.theta < 0) {
-      destination.theta = -destination.theta;
+      theta = -theta;
       direction = -direction;
     }
+    motion->direction = direction;
     motion->trapezoid = m5trapezoid_constructor(
         start_velocity.omega, max_velocity.omega, end_velocity.omega,
-        destination.theta, accel.alpha, frequency);
+        theta, accel.alpha, frequency);
   } else if (type == M5_SLALOM) {
-    if (destination.theta < 0) {
-      destination.theta = -destination.theta;
-      destination.x = -destination.x;
-      direction = -direction;
-    }
     m5motion_initialize_slalom(motion, start_velocity, max_velocity, end_velocity, destination, accel, frequency);
   }
   motion->type = type;
-  motion->direction = direction;
   motion->destination = destination;
   m5motion_reset(motion);
   return motion;

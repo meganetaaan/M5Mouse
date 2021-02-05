@@ -10,10 +10,17 @@ void m5gyro_write_byte(m5SPIConfiguration spi, uint8_t reg, uint8_t val) {
   return m5spi_write_byte(spi, reg & 0x7F, val /* mask first bit 0--- ---- */);
 }
 
+void m5gyro_calibrate(m5Gyro gyro) {
+  gyro->offset_sum = 0;
+  gyro->offset_count = M5_GYRO_OFFSET_COUNT;
+}
+
 void m5gyro_init(m5Gyro gyro) {
   gyro->raw = 1000;
   gyro->ang_vel = 0.01f;
   gyro->active = 0;
+  gyro->raw_offset = 0;
+  gyro->offset_sum = 0;
 
   // SPI_CSをプルアップ
   HAL_GPIO_WritePin(gyro->spi->cs_port, gyro->spi->cs_pin, GPIO_PIN_SET);
@@ -56,5 +63,12 @@ void m5gyro_update(m5Gyro gyro) {
   zout_l = m5gyro_read_byte(gyro->spi, 0x38);
 
   gyro->raw = ((zout_h << 8) & 0xff00) | (zout_l & 0x00ff);
-  gyro->ang_vel = (float)gyro->raw / 16.4;
+  if (gyro->offset_count > 0) {
+    gyro->offset_sum += gyro->raw;
+    gyro->offset_count -= 1;
+    if (gyro->offset_count == 0) {
+      gyro->raw_offset = gyro->offset_sum / M5_GYRO_OFFSET_COUNT;
+    }
+  }
+  gyro->ang_vel = (float)(gyro->raw - gyro->raw_offset) / 16.4;
 }

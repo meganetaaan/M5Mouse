@@ -116,21 +116,33 @@ void m5mouse_update_target_velocity(m5Mouse mouse) {
       if (mouse->motion != NULL) {
         m5Position current = mouse->odometry->position;
         m5Position goal = mouse->motion->destination;
+        // m5Position goal = mouse->track_target.position;
         diff.x = current.x - goal.x;
         diff.y = current.y - goal.y;
         diff.theta = current.theta - goal.theta;
-
         m5motion_destructor(mouse->motion);
         mouse->motion = NULL;
       }
       mouse->motion = m5motionqueue_dequeue(mouse->motion_queue);
       m5odometry_reset(mouse->odometry);
       mouse->odometry->position = diff;
+      // mouse->count = 0;
     }
   }
-  m5TrackTarget t = m5motion_get_next(mouse->motion);
+  mouse->track_target = m5motion_get_next(mouse->motion);
+  /*
+  if (mouse->count == 0) {
+    mouse->track_target = m5motion_get_next(mouse->motion);
+    mouse->count = 0;
+  }
+  mouse->count += 1;
+  if (mouse->count++ > 4) {
+    mouse->count = 0;
+  }
+  */
+  // m5TrackTarget t = m5motion_get_next(mouse->motion);
   // TODO: 追従処理
-  mouse->target_velocity = m5tracking_get_velocity(mouse->odometry->position, t);
+  mouse->target_velocity = m5tracking_get_velocity(mouse->odometry->position, mouse->track_target);
 }
 
 void m5mouse_update_velocity(m5Mouse mouse) {
@@ -146,12 +158,14 @@ void m5mouse_update_velocity(m5Mouse mouse) {
 
   // 車輪の速度から車体の速度、角速度への変換
   float vel = (vel_r + vel_l) / 2;
-  m5gyro_update(mouse->gyro);
   // float ang_vel = (vel_l - vel_r) / (2 * PI * M5_TREAD_WIDTH);
+  m5gyro_update(mouse->gyro);
   float ang_vel = mouse->gyro->ang_vel;
+  /*
   if (-1.0 < ang_vel && ang_vel < 1.0) {
     ang_vel = 0;
   }
+  */
   ang_vel = to_radians(ang_vel);
   m5Velocity v_meajured = (m5Velocity){vel, ang_vel};
 
@@ -169,7 +183,7 @@ void m5mouse_straight(m5Mouse mouse, float distance, float start_velocity, float
   m5motionqueue_enqueue(
       mouse->motion_queue,
       m5motion_constructor(M5_STRAIGHT, start, max, end,
-                           destination, mouse->cap_accel, M5_FREQUENCY));
+                           destination, mouse->cap_accel, M5_TARGET_FREQUENCY));
   return;
 }
 
@@ -179,7 +193,7 @@ void m5mouse_spin(m5Mouse mouse, float degrees) {
       mouse->motion_queue,
       m5motion_constructor(M5_SPIN, (m5Velocity){0, 0}, mouse->cap_velocity,
                            (m5Velocity){0, 0}, destination, mouse->cap_accel,
-                           M5_FREQUENCY));
+                           M5_TARGET_FREQUENCY));
   return;
 }
 
@@ -195,5 +209,5 @@ void m5mouse_slalom(m5Mouse mouse, float degrees, float r, float const_velocity,
   m5Accel a = (m5Accel){0.0, ang_accel};
   m5motionqueue_enqueue(
     mouse->motion_queue,
-    m5motion_constructor(M5_SLALOM, start, max, end, destination, a, M5_FREQUENCY));
+    m5motion_constructor(M5_SLALOM, start, max, end, destination, a, M5_TARGET_FREQUENCY));
 }

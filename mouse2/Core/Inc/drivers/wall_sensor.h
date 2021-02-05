@@ -3,7 +3,7 @@
 #include "sensor.h"
 
 #define M5_WALL_THRESH_L (780)
-#define M5_WALL_THRESH_F (560)
+#define M5_WALL_THRESH_F (540)
 #define M5_WALL_THRESH_R (1050)
 #define M5_WALL_COUNT (2)
 #define M5_WALL_OFFSET_COUNT (100)

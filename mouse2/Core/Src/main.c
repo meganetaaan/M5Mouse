@@ -114,6 +114,7 @@ int main(void) {
   // initialise_monitor_handles();
   // #endif
 
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -178,7 +179,9 @@ int main(void) {
           m5i2cbuffer[0] = m5i2c_count++;
           HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 100);
           // m5wallsensor_calibrate(mouse->sensor);
-          HAL_Delay(500);
+          HAL_Delay(300);
+          m5gyro_calibrate(mouse->gyro);
+          HAL_Delay(200);
           // m5agent_search_run(agent, (m5Index){7, 8});
           float v = mouse->cap_velocity.v;
           /*
@@ -186,17 +189,22 @@ int main(void) {
           m5mouse_spin(mouse, 30);
           m5mouse_spin(mouse, -30);
           */
+          // m5mouse_slalom(mouse, -90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
+          // ouse_slalom(mouse, -90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
           m5mouse_straight(mouse, 90, 0, v, v);
+          // m5mouse_straight(mouse, 90, v, v, 0);
+          // m5mouse_slalom(mouse, -90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
           // m5mouse_slalom(mouse, 90, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
           for (int i = 0; i < 3; i++) {
             m5mouse_straight(mouse, 180, v, v, v);
             // m5mouse_straight(mouse, 90, v, v, 0);
             // m5mouse_spin(mouse, 90);
             // m5mouse_straight(mouse, 90, 0, v, v);
-            m5mouse_slalom(mouse, 90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
+            m5mouse_slalom(mouse, -90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
           }
           m5mouse_straight(mouse, 180, v, v, v);
           m5mouse_straight(mouse, 90, v, v, 0);
+          m5mouse_spin(mouse, -90);
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:

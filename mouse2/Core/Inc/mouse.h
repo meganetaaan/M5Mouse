@@ -34,6 +34,8 @@ typedef struct {
   m5PIDController controller_wall;
   uint8_t is_wall_adjust_enabled;
   uint8_t active;
+  uint8_t count;
+  m5TrackTarget track_target;
 } m5MouseRecord, *m5Mouse;
 
 typedef struct {
