@@ -15,6 +15,7 @@
 
 typedef struct {
   m5Motion motion;
+  m5Odometry odometry;
   m5MotionQueue motion_queue;
   m5Velocity current_velocity;
   m5Velocity target_velocity;
@@ -56,6 +57,7 @@ void m5mouse_update_target_velocity(m5Mouse mouse);
 void m5mouse_update_velocity(m5Mouse mouse);
 void m5mouse_apply_velocity(m5Mouse mouse);
 void m5mouse_set_operation(m5Mouse mouse);
-void m5mouse_straight(m5Mouse mouse, float distance, float max_velocity, float end_velocity);
-void m5mouse_spin(m5Mouse mouse, float angle);
+void m5mouse_straight(m5Mouse mouse, float distance, float start_velocity, float max_velocity, float end_velocity);
+void m5mouse_slalom(m5Mouse mouse, float degrees, float d, float const_velocity, float ang_accel, float max_omega);
+void m5mouse_spin(m5Mouse mouse, float degrees);
 #endif

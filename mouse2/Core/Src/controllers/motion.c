@@ -62,12 +62,49 @@ void m5motionqueue_enqueue(m5MotionQueue queue, m5Motion motion) {
   m5queue_enqueue(queue, (void *)motion);
 }
 
+void m5motion_initialize_slalom(m5Motion motion, m5Velocity start_velocity,
+                                m5Velocity max_velocity,
+                                m5Velocity end_velocity, m5Position destination,
+                                m5Accel accel, float frequency) {
+  m5Trapezoid tr = m5trapezoid_constructor(
+      start_velocity.omega, max_velocity.omega, end_velocity.omega,
+      destination.theta, accel.alpha, frequency);
+  m5Odometry odo = motion->odometry;
+  m5odometry_reset(odo);
+  size_t count = 0;
+  float v = start_velocity.v;
+  while(!tr->is_end) {
+    float omega = m5trapezoid_get_next(tr);
+    m5odometry_update(odo, (m5Velocity){v, omega});
+    count++;
+  }
+  if (abs(odo->position.x) > abs(destination.x)) {
+    // printf("error");
+  }
+
+  float x_diff = destination.x - odo->position.x;
+  float post_curve = x_diff / arm_sin_f32(destination.theta);
+  float pre_curve = destination.y - odo->position.y - post_curve * arm_cos_f32(destination.theta);
+  motion->n1 = pre_curve * frequency / v;
+  motion->n2 = motion->n1 + count;
+  motion->n3 = motion->n2 + post_curve * frequency / v;
+  m5trapezoid_reset(tr);
+  motion->trapezoid = tr;
+  m5odometry_reset(motion->odometry);
+  motion->count = 0;
+  motion->is_end = 0;
+}
+
 m5Motion m5motion_constructor(m5MotionType type, m5Velocity start_velocity,
                               m5Velocity max_velocity, m5Velocity end_velocity,
                               m5Position destination, m5Accel accel,
                               float frequency) {
   uint8_t direction = 1;
   m5Motion motion = malloc(sizeof(m5MotionRecord));
+  motion->odometry = m5odometry_constructor(1.0 / frequency);
+  motion->start_velocity = start_velocity;
+  motion->max_velocity = max_velocity;
+  motion->end_velocity = end_velocity;
   if (type == M5_STRAIGHT) {
     if (destination.y < 0) {
       destination.y = -destination.y;
@@ -84,10 +121,16 @@ m5Motion m5motion_constructor(m5MotionType type, m5Velocity start_velocity,
     motion->trapezoid = m5trapezoid_constructor(
         start_velocity.omega, max_velocity.omega, end_velocity.omega,
         destination.theta, accel.alpha, frequency);
+  } else if (type == M5_SLALOM) {
+    if (destination.theta < 0) {
+      destination.theta = -destination.theta;
+      destination.x = -destination.x;
+      direction = -direction;
+    }
+    m5motion_initialize_slalom(motion, start_velocity, max_velocity, end_velocity, destination, accel, frequency);
   }
   motion->type = type;
   motion->direction = direction;
-  motion->odometry = m5odometry_constructor(1.0 / frequency);
   motion->destination = destination;
   m5motion_reset(motion);
   return motion;
@@ -107,6 +150,7 @@ void m5motion_destructor(m5Motion motion) {
 
 void m5motion_reset(m5Motion motion) {
   m5trapezoid_reset(motion->trapezoid);
+  motion->count = 0;
   motion->is_end = 0;
 }
 
@@ -131,5 +175,22 @@ m5TrackTarget m5motion_get_next(m5Motion motion) {
       v = (m5Velocity){0.0, m5trapezoid_get_next(tr) * motion->direction};
       m5odometry_update(motion->odometry, v);
       return (m5TrackTarget){M5_SPIN, motion->odometry->position, v};
+    case M5_SLALOM:
+      if (motion->count < motion->n1) {
+        v = motion->start_velocity;
+      } else if (motion->count < motion->n2) {
+        v = (m5Velocity){motion->start_velocity.v, m5trapezoid_get_next(tr) * motion->direction};
+      } else if (motion->count <motion->n3) {
+        v = motion->end_velocity;
+      } else {
+        motion->is_end = 1;
+        v = motion->end_velocity;
+      }
+      motion->count += 1;
+      m5odometry_update(motion->odometry, v);
+      if (motion->is_end) {
+        return (m5TrackTarget){M5_SLALOM, motion->destination, v};
+      }
+      return (m5TrackTarget){M5_SLALOM, motion->odometry->position, v};
   }
 }

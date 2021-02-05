@@ -103,6 +103,7 @@ extern uint8_t m5i2cbuffer[256];
 /* USER CODE BEGIN 0 */
 /* USER CODE END 0 */
 
+
 /**
  * @brief  The application entry point.
  * @retval int
@@ -154,7 +155,8 @@ int main(void) {
   HAL_TIM_Base_Start_IT(&htim6);
   m5Maze maze = m5maze_constructor();
   m5MazeAgent agent = m5mazeagent_constructor(maze, mouse);
-  HAL_Delay(1000);
+  HAL_Delay(500);
+  // m5mouse_slalom(mouse, 90, mouse->cap_velocity.v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
 
   /* USER CODE END 2 */
 
@@ -178,21 +180,23 @@ int main(void) {
           // m5wallsensor_calibrate(mouse->sensor);
           HAL_Delay(500);
           // m5agent_search_run(agent, (m5Index){7, 8});
-          float v = 300.0;
+          float v = mouse->cap_velocity.v;
+          /*
           m5mouse_straight(mouse, 60, v, 0);
           m5mouse_spin(mouse, 30);
           m5mouse_spin(mouse, -30);
-          /*
-          for (int i = 0; i < 3; i++) {
-            m5mouse_straight(mouse, 180, v, v);
-            m5mouse_straight(mouse, 90, v, 0);
-            m5mouse_spin(mouse, 90);
-            m5mouse_straight(mouse, 90, v, v);
-          }
-          m5mouse_straight(mouse, 180, v, v);
-          m5mouse_straight(mouse, 90, v, 0);
-          m5mouse_spin(mouse, 90);
           */
+          m5mouse_straight(mouse, 90, 0, v, v);
+          // m5mouse_slalom(mouse, 90, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
+          for (int i = 0; i < 3; i++) {
+            m5mouse_straight(mouse, 180, v, v, v);
+            // m5mouse_straight(mouse, 90, v, v, 0);
+            // m5mouse_spin(mouse, 90);
+            // m5mouse_straight(mouse, 90, 0, v, v);
+            m5mouse_slalom(mouse, 90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
+          }
+          m5mouse_straight(mouse, 180, v, v, v);
+          m5mouse_straight(mouse, 90, v, v, 0);
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
@@ -754,9 +758,9 @@ void m5main_init_mouse(void) {
   mouse->sensor = ws;
 
   m5PIDController controller_l =
-      m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
+      m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, M5DEFAULT_SATURATION);
   m5PIDController controller_r =
-      m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, 300);
+      m5pid_constructor(M5DEFAULT_PGAIN, M5DEFAULT_IGAIN, M5DEFAULT_DGAIN, M5DEFAULT_SATURATION);
   m5PIDController controller_wall = m5pid_constructor(
       M5DEFAULT_WALL_PGAIN, M5DEFAULT_WALL_IGAIN, M5DEFAULT_WALL_DGAIN, 10);
   mouse->controller_l = controller_l;
@@ -766,10 +770,11 @@ void m5main_init_mouse(void) {
 
   mouse->current_velocity = (m5Velocity){0, 0};
   mouse->target_velocity = (m5Velocity){0, 0};
-  mouse->cap_velocity = (m5Velocity){400, 1 * PI};
-  mouse->cap_accel = (m5Accel){600, 2 * PI};
+  mouse->cap_velocity = (m5Velocity){240, 6 * PI};
+  mouse->cap_accel = (m5Accel){600, 8 * PI};
   mouse->position = (m5Position){0, 0};
   mouse->is_wall_adjust_enabled = 0;
+  mouse->odometry = m5odometry_constructor(M5_DELTA);
 }
 
 /* USER CODE END 4 */

@@ -1,7 +1,7 @@
 #include "mouse.h"
 
 #include <arm_math.h>
-#include <controllers/pid.h>
+#include <controllers/tracking.h>
 #include <stdlib.h>
 
 #include "global.h"
@@ -92,6 +92,8 @@ void m5mouse_update_wallinfo(m5Mouse mouse) {
 }
 
 void m5mouse_update_position(m5Mouse mouse) {
+  m5odometry_update(mouse->odometry, mouse->current_velocity);
+  // TODO: 以下の処理は不要になったら削除する
   mouse->position.y = mouse->current_velocity.v * M5_DELTA;
   mouse->position.theta = mouse->current_velocity.omega * M5_DELTA;
 }
@@ -103,20 +105,32 @@ uint8_t m5mouse_is_moving(m5Mouse mouse) {
 void m5mouse_update_target_velocity(m5Mouse mouse) {
   // tar_velを更新（加速度*微小時間）
   if (!m5mouse_is_moving(mouse)) {
-    if (mouse->motion != NULL) {
-      m5motion_destructor(mouse->motion);
-      mouse->motion = NULL;
-    }
     if (m5queue_is_empty(mouse->motion_queue)) {
       mouse->target_velocity = (m5Velocity){0, 0};
       return;
     } else {
+      // 目標座標と現在位置のエラーを、新しいオドメトリに反映する
+      m5Position diff = (m5Position){0.0, 0.0, 0.0};
+      // printf("mouse(x, y, theta): (%f, %f, %f)\r\n", mouse->odometry->position.x,
+            //  mouse->odometry->position.y, mouse->odometry->position.theta);
+      if (mouse->motion != NULL) {
+        m5Position current = mouse->odometry->position;
+        m5Position goal = mouse->motion->destination;
+        diff.x = current.x - goal.x;
+        diff.y = current.y - goal.y;
+        diff.theta = current.theta - goal.theta;
+
+        m5motion_destructor(mouse->motion);
+        mouse->motion = NULL;
+      }
       mouse->motion = m5motionqueue_dequeue(mouse->motion_queue);
+      m5odometry_reset(mouse->odometry);
+      mouse->odometry->position = diff;
     }
   }
   m5TrackTarget t = m5motion_get_next(mouse->motion);
-  // TODO:
-  mouse->target_velocity = t.velocity;
+  // TODO: 追従処理
+  mouse->target_velocity = m5tracking_get_velocity(mouse->odometry->position, t);
 }
 
 void m5mouse_update_velocity(m5Mouse mouse) {
@@ -133,6 +147,7 @@ void m5mouse_update_velocity(m5Mouse mouse) {
   // 車輪の速度から車体の速度、角速度への変換
   float vel = (vel_r + vel_l) / 2;
   m5gyro_update(mouse->gyro);
+  // float ang_vel = (vel_l - vel_r) / (2 * PI * M5_TREAD_WIDTH);
   float ang_vel = mouse->gyro->ang_vel;
   if (-1.0 < ang_vel && ang_vel < 1.0) {
     ang_vel = 0;
@@ -146,14 +161,14 @@ void m5mouse_update_velocity(m5Mouse mouse) {
   return;
 };
 
-void m5mouse_straight(m5Mouse mouse, float distance, float max_velocity,
-                      float end_velocity) {
+void m5mouse_straight(m5Mouse mouse, float distance, float start_velocity, float max_velocity, float end_velocity) {
   m5Position destination = (m5Position){0, distance, 0};
+  m5Velocity start = (m5Velocity){start_velocity, 0};
   m5Velocity max = (m5Velocity){max_velocity, 0};
   m5Velocity end = (m5Velocity){end_velocity, 0};
   m5motionqueue_enqueue(
       mouse->motion_queue,
-      m5motion_constructor(M5_STRAIGHT, mouse->current_velocity, max, end,
+      m5motion_constructor(M5_STRAIGHT, start, max, end,
                            destination, mouse->cap_accel, M5_FREQUENCY));
   return;
 }
@@ -166,4 +181,19 @@ void m5mouse_spin(m5Mouse mouse, float degrees) {
                            (m5Velocity){0, 0}, destination, mouse->cap_accel,
                            M5_FREQUENCY));
   return;
+}
+
+void m5mouse_slalom(m5Mouse mouse, float degrees, float r, float const_velocity, float ang_accel, float max_omega) {
+  m5Position destination = (m5Position) {
+    r * ((degrees > 0) ? 1.0 : -1.0f),
+    r,
+    to_radians(degrees)
+  };
+  m5Velocity start = (m5Velocity){const_velocity, 0};
+  m5Velocity max = (m5Velocity){const_velocity, max_omega};
+  m5Velocity end = start;
+  m5Accel a = (m5Accel){0.0, ang_accel};
+  m5motionqueue_enqueue(
+    mouse->motion_queue,
+    m5motion_constructor(M5_SLALOM, start, max, end, destination, a, M5_FREQUENCY));
 }

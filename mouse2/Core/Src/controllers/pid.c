@@ -31,13 +31,15 @@ m5Value m5pid_update(m5PIDController pid, m5Value target_value, m5Value current_
   }
   float delta = pid->config->delta;
   m5Value diff = target_value - current_value;
-  m5Value integrated = pid->context->integrated_value += diff * delta;
+  // m5Value integrated = pid->context->integrated_value += diff * delta;
+  m5Value integrated = pid->context->integrated_value += diff;
   if (integrated > pid->config->i_saturation) {
     integrated = pid->config->i_saturation;
   } else if (integrated < -pid->config->i_saturation) {
     integrated = -pid->config->i_saturation;
   }
-  m5Value derivative = (current_value - pid->context->last_value) / delta;
+  // m5Value derivative = (current_value - pid->context->last_value) / delta;
+  m5Value derivative = (current_value - pid->context->last_value);
 
   // calculate value
   float p = diff * pid->config->p_gain;

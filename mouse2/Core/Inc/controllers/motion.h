@@ -35,10 +35,17 @@ typedef struct {
 
 typedef struct {
   m5MotionType type;
+  m5Velocity start_velocity;
+  m5Velocity max_velocity;
+  m5Velocity end_velocity;
   m5Trapezoid trapezoid;
   m5Odometry odometry;
   int8_t direction;
   m5Position destination;
+  size_t count;
+  size_t n1;
+  size_t n2;
+  size_t n3;
   uint8_t is_end;
 } m5MotionRecord, *m5Motion;
 

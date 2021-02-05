@@ -45,6 +45,7 @@ Core/Src/global.c \
 Core/Src/controllers/odometry.c \
 Core/Src/controllers/pid.c \
 Core/Src/controllers/motion.c \
+Core/Src/controllers/tracking.c \
 Core/Src/drivers/gyro.c \
 Core/Src/drivers/encoder.c \
 Core/Src/drivers/motor.c \
