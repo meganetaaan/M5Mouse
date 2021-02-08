@@ -20,6 +20,7 @@ m5MazeAgent m5mazeagent_constructor(m5Maze maze, m5Mouse mouse) {
   agent->_maze = test_maze;
   agent->position = (m5Index){0, 0};
   agent->direction = M5_DIR_NORTH;
+  agent->curve_mode = M5_CURVE_SLALOM;
   return agent;
 }
 
@@ -39,10 +40,16 @@ void m5agent_straight(m5MazeAgent agent) {
 
 void m5agent_turn_left(m5MazeAgent agent) {
   float v = agent->mouse->cap_velocity.v;
+  float alpha = agent->mouse->cap_accel.alpha;
+  float omega = agent->mouse->cap_velocity.omega;
   if (agent->mouse) {
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v, 0);
-    m5mouse_spin(agent->mouse, -90);
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, 0, v, v);
+    if (agent->curve_mode == M5_CURVE_SLALOM) {
+      m5mouse_slalom(agent->mouse, -90, M5_MAZE_WIDTH / 2, v, alpha, omega);
+    } else {
+      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v, 0);
+      m5mouse_spin(agent->mouse, -90);
+      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, 0, v, v);
+    }
   }
   agent->direction = (agent->direction + 3) % 4;
   m5agent_advance(agent);
@@ -50,10 +57,16 @@ void m5agent_turn_left(m5MazeAgent agent) {
 
 void m5agent_turn_right(m5MazeAgent agent) {
   float v = agent->mouse->cap_velocity.v;
+  float alpha = agent->mouse->cap_accel.alpha;
+  float omega = agent->mouse->cap_velocity.omega;
   if (agent->mouse) {
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v, 0);
-    m5mouse_spin(agent->mouse, 90);
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, 0, v, v);
+    if (agent->curve_mode == M5_CURVE_SLALOM) {
+      m5mouse_slalom(agent->mouse, 90, M5_MAZE_WIDTH / 2, v, alpha, omega);
+    } else {
+      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v, 0);
+      m5mouse_spin(agent->mouse, 90);
+      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, 0, v, v);
+    }
   }
   agent->direction = (agent->direction + 1) % 4;
   m5agent_advance(agent);

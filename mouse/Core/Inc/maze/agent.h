@@ -13,6 +13,11 @@ typedef enum {
 } m5Direction;
 
 typedef enum {
+  M5_CURVE_SPIN = 0x00U,
+  M5_CURVE_SLALOM = 0x01U
+} m5CurveMode;
+
+typedef enum {
   M5_DIR_FORWARD = 0x00U,
   M5_DIR_RIGHT = 0x01U,
   M5_DIR_BACKWARD = 0x02U,
@@ -34,6 +39,7 @@ typedef struct {
   m5Index position;
   m5Direction direction;
   m5Index goal;
+  m5CurveMode curve_mode;
 } m5MazeAgentRecord, *m5MazeAgent;
 
 m5MazeAgent m5mazeagent_constructor(m5Maze maze, m5Mouse mouse);
