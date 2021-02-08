@@ -35,6 +35,7 @@
 #include <stdlib.h>
 // #define ARM_MATH_CM4
 #include <arm_math.h>
+#include "test.h"
 
 #include "controllers/motion.h"
 #include "maze/agent.h"
@@ -178,38 +179,13 @@ int main(void) {
         case M5_REGISTER_TEST:
           m5i2cbuffer[0] = m5i2c_count++;
           HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 100);
-          // m5wallsensor_calibrate(mouse->sensor);
-          HAL_Delay(300);
-          m5gyro_calibrate(mouse->gyro);
-          HAL_Delay(200);
-          // m5agent_search_run(agent, (m5Index){7, 8});
-          float v = mouse->cap_velocity.v;
-          /*
-          m5mouse_straight(mouse, 60, v, 0);
-          m5mouse_spin(mouse, 30);
-          m5mouse_spin(mouse, -30);
-          */
-          // m5mouse_slalom(mouse, -90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
-          // ouse_slalom(mouse, -90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
-          m5mouse_straight(mouse, 90, 0, v, v);
-          // m5mouse_straight(mouse, 90, v, v, 0);
-          // m5mouse_slalom(mouse, -90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
-          // m5mouse_slalom(mouse, 90, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
-          for (int i = 0; i < 3; i++) {
-            // m5mouse_straight(mouse, 180, v, v, v);
-            // m5mouse_straight(mouse, 90, v, v, 0);
-            // m5mouse_spin(mouse, 90);
-            // m5mouse_straight(mouse, 90, 0, v, v);
-            m5mouse_slalom(mouse, -90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
-            m5mouse_slalom(mouse, 90, M5_CELL_WIDTH * 0.5, v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
-          }
-          m5mouse_straight(mouse, 90, v, v, 0);
-          m5mouse_spin(mouse, -180);
+          m5test_straight(mouse);
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
-          // TODO:
+          m5test_calibrate(mouse);
           m5wallsensor_calibrate(mouse->sensor);
+          mouse->is_wall_adjust_enabled = 1;
           HAL_Delay(300);
           break;
         default:
@@ -780,7 +756,6 @@ void m5main_init_mouse(void) {
   mouse->target_velocity = (m5Velocity){0, 0};
   mouse->cap_velocity = (m5Velocity){M5_VELOCITY_SEARCH, M5_ANG_VELOCITY};
   mouse->cap_accel = (m5Accel){M5_ACCEL_SEARCH, M5_ANG_ACCEL};
-  mouse->position = (m5Position){0, 0};
   mouse->is_wall_adjust_enabled = 0;
   mouse->odometry = m5odometry_constructor(M5_DELTA);
 }

@@ -40,6 +40,7 @@ BUILD_DIR = build
 C_SOURCES =  \
 Core/Src/main.c \
 Core/Src/mouse.c \
+Core/Src/test.c \
 Core/Src/delay_us.c \
 Core/Src/global.c \
 Core/Src/controllers/odometry.c \
