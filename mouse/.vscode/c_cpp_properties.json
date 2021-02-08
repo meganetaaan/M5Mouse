@@ -8,12 +8,11 @@
             ],
             "defines": [
                 "USE_HAL_DRIVER",
-                "STM32F1",
-                "STM32F103xB",
+                "STM32F405xx",
                 "F_CPU=72000000L",
                 "__weak=__attribute__((weak))"
             ],
-            "compilerPath": "\"/usr/bin/arm-none-eabi-gcc\" -mthumb -mcpu=cortex-m3",
+            "compilerPath": "\"/usr/bin/arm-none-eabi-gcc\" -mthumb -mcpu=cortex-m4",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-x64"

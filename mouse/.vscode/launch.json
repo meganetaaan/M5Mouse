@@ -8,13 +8,13 @@
             "armToolchainPath": "",
             "name": "Cortex Debug",
             "cwd": "${workspaceRoot}",
-            "executable": "./build/stm32_test.elf",
+            "executable": "./build/mouse2.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
             "configFiles": [
                 "interface/stlink-v2.cfg",
-                "target/stm32f1x.cfg"
+                "target/stm32f4x.cfg"
             ],
             "preLaunchTask": "Build project",
             "postLaunchCommands": ["monitor arm semihosting enable"]
