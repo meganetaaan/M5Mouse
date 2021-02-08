@@ -11,7 +11,8 @@
 
 #define M5_PULSE_PER_ROTATE (4096 * 4 * 5)
 #define M5_BODY_WIDTH 54
-#define M5_WALL_ADJUST_GAIN (0.001f)
+#define M5_WALL_ADJUST_GAIN (0.0001f)
+#define M5_WALL_ERROR_UPDATE_GAIN (0.1f)
 
 typedef struct {
   m5Motion motion;
@@ -35,21 +36,10 @@ typedef struct {
   uint8_t is_wall_adjust_enabled;
   uint8_t active;
   uint8_t count;
+  float wall_error;
   m5TrackTarget track_target;
 } m5MouseRecord, *m5Mouse;
 
-typedef struct {
-  uint32_t count;
-  uint32_t duration;
-  m5Position position;
-  m5Velocity start_velocity;
-  m5Velocity max_velocity;
-  m5Velocity end_velocity;
-} m5MotionOpRecord, *m5MotionOp;
-
-m5MotionOp m5move_straight_constructor(float distance, float start_velocity, float max_velocity, float end_velocity);
-m5Velocity m5move_next(m5MotionOp op);
-uint8_t m5move_is_end(m5MotionOp op);
 m5Mouse m5mouse(void);
 void m5mouse_start(m5Mouse mouse);
 void m5mouse_update(m5Mouse mouse);

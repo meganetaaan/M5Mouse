@@ -41,29 +41,12 @@ void m5mouse_apply_velocity(m5Mouse mouse) {
   float vel_l = current.v + current_omega;
   float vel_r = current.v - current_omega;
 
-  // 壁補正の補正項を計算する
-  m5Value voltage_wall = 0;
-  if (mouse->is_wall_adjust_enabled && mouse->motion != NULL &&
-      mouse->motion->type == M5_STRAIGHT &&
-      (mouse->wall.left || mouse->wall.right)) {
-    m5Value error = 0;
-    if (mouse->wall.right && mouse->wall.left) {
-      error = (mouse->wall.right_error - mouse->wall.left_error) *
-              M5_WALL_ADJUST_GAIN;
-    } else {
-      error = ((mouse->wall.right_error - mouse->wall.left_error) * 2) *
-              M5_WALL_ADJUST_GAIN;
-    }
-    voltage_wall = m5pid_update(mouse->controller_wall, 0, error);
-  } else {
-    m5pid_reset(mouse->controller_wall);
-  }
   m5Value voltage_l = m5pid_update(mouse->controller_l, ref_vel_l, vel_l);
   m5Value voltage_r = m5pid_update(mouse->controller_r, ref_vel_r, vel_r);
 
   // モータを更新
-  voltage_l = clamp(-M5_MAX_VOLTAGE, M5_MAX_VOLTAGE, voltage_l + voltage_wall);
-  voltage_r = clamp(-M5_MAX_VOLTAGE, M5_MAX_VOLTAGE, voltage_r - voltage_wall);
+  voltage_l = clamp(-M5_MAX_VOLTAGE, M5_MAX_VOLTAGE, voltage_l);
+  voltage_r = clamp(-M5_MAX_VOLTAGE, M5_MAX_VOLTAGE, voltage_r);
   m5Value voltage_bat = M5_VBAT;
   m5motor_set_voltage(mouse->motor_l, voltage_l, voltage_bat);
   m5motor_set_voltage(mouse->motor_r, voltage_r, voltage_bat);
@@ -79,7 +62,7 @@ void m5mouse_update(m5Mouse mouse) {
 
 void m5mouse_update_wallinfo(m5Mouse mouse) {
   mouse->wall = m5wallsensor_update(mouse->sensor);
-  if (mouse->wall.front) {
+  if (mouse->wall.left) {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
   } else {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
@@ -93,9 +76,21 @@ void m5mouse_update_wallinfo(m5Mouse mouse) {
 
 void m5mouse_update_position(m5Mouse mouse) {
   m5odometry_update(mouse->odometry, mouse->current_velocity);
-  // TODO: 以下の処理は不要になったら削除する
-  mouse->position.y = mouse->current_velocity.v * M5_DELTA;
-  mouse->position.theta = mouse->current_velocity.omega * M5_DELTA;
+  // 壁センサの誤差を使って位置を補正する
+  if (mouse->is_wall_adjust_enabled && mouse->motion != NULL &&
+      mouse->motion->type == M5_STRAIGHT &&
+      (mouse->wall.left || mouse->wall.right)) {
+    float wall_error;
+    if (mouse->wall.right && mouse->wall.left) {
+      wall_error = (mouse->wall.right_error - mouse->wall.left_error);
+    } else {
+      wall_error = (mouse->wall.right_error - mouse->wall.left_error) * 2;
+    }
+    mouse->wall_error = mouse->wall_error * (1.0f * M5_WALL_ERROR_UPDATE_GAIN) + wall_error * M5_WALL_ERROR_UPDATE_GAIN;
+    mouse->odometry->position.x = mouse->odometry->position.x + wall_error * M5_WALL_ADJUST_GAIN;
+  } else {
+    mouse->wall_error = 0;
+  }
 }
 
 uint8_t m5mouse_is_moving(m5Mouse mouse) {
