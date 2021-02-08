@@ -3,6 +3,9 @@
     "SRC": "./src",
     "ASSETS": "./assets"
   },
+  "config": {
+    "startupSound": "start.maud"
+  },
   "include": [
     "$(MODDABLE)/examples/manifest_base.json",
     "$(MODDABLE)/examples/manifest_piu.json",
