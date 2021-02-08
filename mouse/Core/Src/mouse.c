@@ -84,7 +84,7 @@ void m5mouse_update_position(m5Mouse mouse) {
     if (mouse->wall.right && mouse->wall.left) {
       wall_error = (mouse->wall.right_error - mouse->wall.left_error);
     } else {
-      wall_error = (mouse->wall.right_error - mouse->wall.left_error) * 2;
+      // wall_error = (mouse->wall.right_error - mouse->wall.left_error) * 2;
     }
     mouse->wall_error = mouse->wall_error * (1.0f * M5_WALL_ERROR_UPDATE_GAIN) + wall_error * M5_WALL_ERROR_UPDATE_GAIN;
     mouse->odometry->position.x = mouse->odometry->position.x + wall_error * M5_WALL_ADJUST_GAIN;

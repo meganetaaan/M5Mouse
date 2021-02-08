@@ -3,11 +3,24 @@ import { Application, Skin } from 'piu/MC'
 import Sound from 'piu/Sound'
 import MarqueeLabel from 'marquee-label'
 import Voices from 'voices'
-import Mouse from 'drivers/mouse'
+import Mouse, { REGISTORY, RegistoryKey } from 'drivers/mouse'
 import Timer from 'timer'
 
 /* global trace */
 declare const global: any
+
+const commands: RegistoryKey[] = [
+  'CALIBRATE',
+  'TEST_STRAIGHT',
+  'TEST_SPIN',
+  'TEST_SLALOM',
+  'TEST_ZIG_ZAG',
+  'TEST_CRANK',
+  'RUN_SEARCH',
+  'RUN_FAST'
+]
+let commandIdx = 0;
+let handler: number | null = null;
 
 const mouse = new Mouse()
 interface Voice {
@@ -81,6 +94,7 @@ function startSpeech() {
 
 
 function stopSpeech() {
+  handler = null
   const balloon = ap.content('balloon')
   if (balloon != null) {
     ap.remove(balloon)
@@ -88,23 +102,17 @@ function stopSpeech() {
   ap.content('avatar').delegate('stopSpeech')
 }
 
-let flag = false
-function changeCommand() {
+function applyCommand(command: RegistoryKey) {
   const balloon = ap.content('balloon')
   if (balloon != null) {
     ap.remove(balloon)
   }
-  /*
-  flag = !flag
-  const b = flag ? commands[0] : commands[1]
-  ap.add(b)
-  */
 
-  let str: number | string;
+  let result = 'success'
   try {
-    str = mouse.readTest()
+    mouse.writeCommand(command)
   } catch(e) {
-    str = 'error'
+    result = 'error'
   }
   const b = new MarqueeLabel({
     state: 0,
@@ -113,27 +121,55 @@ function changeCommand() {
     width: 240,
     height: 40,
     name: 'balloon',
-    string: `デバイスID: ${str}`,
+    string: `${command}: ${result}`,
   })
   ap.add(b)
   ap.content('avatar').delegate('startSpeech')
-  Timer.set(stopSpeech, 1000)
+  if (handler != null) {
+    Timer.clear(handler)
+  }
+  handler = Timer.set(stopSpeech, 1000)
+}
+
+function setCommand(command: RegistoryKey) {
+  const balloon = ap.content('balloon')
+  if (balloon != null) {
+    ap.remove(balloon)
+  }
+
+  const b = new MarqueeLabel({
+    state: 0,
+    bottom: 10,
+    right: 10,
+    width: 240,
+    height: 40,
+    name: 'balloon',
+    string: `${command}`,
+  })
+  ap.add(b)
+  ap.content('avatar').delegate('startSpeech')
+  if (handler != null) {
+    Timer.clear(handler)
+  }
+  handler = Timer.set(stopSpeech, 1000)
 }
 
 if (global.button != null) {
   global.button.a.onChanged = function() {
     if (this.read()) {
-      startSpeech()
+      commandIdx = Math.max((commandIdx - 1), 0)
+      setCommand(commands[commandIdx])
     }
   }
   global.button.b.onChanged = function() {
     if (this.read()) {
-      changeCommand()
+      applyCommand(commands[commandIdx])
     }
   }
   global.button.c.onChanged = function() {
     if (this.read()) {
-      mouse.calibrate()
+      commandIdx = Math.min((commandIdx + 1), commands.length - 1)
+      setCommand(commands[commandIdx])
     }
   }
 }

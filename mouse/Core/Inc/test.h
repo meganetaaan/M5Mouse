@@ -4,9 +4,11 @@
 #include "mouse.h"
 
 void m5test_straight(m5Mouse mouse);
-void m5test_calibrate(m5Mouse mouse);
-void m5test_calibrate_wall(m5Mouse mouse);
+void m5test_spin(m5Mouse mouse);
 void m5test_slalom(m5Mouse mouse);
 void m5test_zig_zag(m5Mouse mouse);
+void m5test_crank(m5Mouse mouse);
+void m5test_calibrate(m5Mouse mouse);
+void m5test_calibrate_wall(m5Mouse mouse);
 
 #endif

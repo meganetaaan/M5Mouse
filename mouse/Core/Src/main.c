@@ -176,15 +176,47 @@ int main(void) {
           m5i2cbuffer[0] = M5_VALUE_WHO_AM_I;
           HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 100);
           break;
-        case M5_REGISTER_TEST:
+        case M5_REGISTER_RUN_SEARCH:
+          mouse->cap_velocity = (m5Velocity){M5_VELOCITY_SEARCH, M5_ANG_VELOCITY};
+          m5agent_search_run(agent, (m5Index){7, 8});
+          break;
+        case M5_REGISTER_RUN_FAST:
+          // TODO
+          // mouse->cap_velocity = (m5Velocity){M5_VELOCITY, M5_ANG_VELOCITY};
+          // m5agent_fast_run(agent, (m5Index){7, 8});
+          break;
+        case M5_REGISTER_TEST_STRAIGHT:
           m5i2cbuffer[0] = m5i2c_count++;
-          HAL_I2C_Slave_Transmit(&hi2c1, m5i2cbuffer, 1, 100);
           m5test_straight(mouse);
+          HAL_Delay(300);
+          break;
+        case M5_REGISTER_TEST_SPIN:
+          m5i2cbuffer[0] = m5i2c_count++;
+          m5test_spin(mouse);
+          HAL_Delay(300);
+          break;
+        case M5_REGISTER_TEST_SLALOM:
+          m5i2cbuffer[0] = m5i2c_count++;
+          m5test_slalom(mouse);
+          HAL_Delay(300);
+          break;
+        case M5_REGISTER_TEST_ZIG_ZAG:
+          m5i2cbuffer[0] = m5i2c_count++;
+          m5test_zig_zag(mouse);
+          HAL_Delay(300);
+          break;
+        case M5_REGISTER_TEST_CRANK:
+          m5i2cbuffer[0] = m5i2c_count++;
+          m5test_crank(mouse);
+          HAL_Delay(300);
+          break;
+        case M5_REGISTER_RESET:
+          m5i2cbuffer[0] = m5i2c_count++;
+          m5odometry_reset(mouse->odometry);
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
           m5test_calibrate(mouse);
-          m5wallsensor_calibrate(mouse->sensor);
           mouse->is_wall_adjust_enabled = 1;
           HAL_Delay(300);
           break;

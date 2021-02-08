@@ -9,6 +9,11 @@ void m5test_straight(m5Mouse mouse) {
   m5mouse_spin(mouse, 180);
 }
 
+void m5test_spin(m5Mouse mouse) {
+  HAL_Delay(300);
+  m5mouse_spin(mouse, 360 * 10);
+}
+
 void m5test_crank(m5Mouse mouse) {
   HAL_Delay(300);
   float v = mouse->cap_velocity.v;

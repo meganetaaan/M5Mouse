@@ -1,6 +1,6 @@
 import I2C from 'pins/i2c'
 
-type RegistoryKey =
+export type RegistoryKey =
   | 'POWER_ON'
   | 'POWER_OFF'
   | 'READ_ENCODER_L'
@@ -11,15 +11,23 @@ type RegistoryKey =
   | 'READ_SENSOR_R'
   | 'WRITE_MOTOR_V_L'
   | 'WRITE_MOTOR_V_R'
+  | 'RUN_SEARCH'
+  | 'RUN_FAST'
+  | 'SHOW_MAZE'
   | 'WHO_AM_I'
-  | 'TEST'
+  | 'TEST_STRAIGHT'
+  | 'TEST_SPIN'
+  | 'TEST_SLALOM'
+  | 'TEST_ZIG_ZAG'
+  | 'TEST_CRANK'
   | 'CALIBRATE'
+  | 'RESET'
 type EncoderPosition = 'LEFT' | 'RIGHT'
 type SensorPosition = 'LEFT' | 'FRONT_LEFT' | 'FRONT_RIGHT' | 'RIGHT'
 const DEFAULT_ADDRESS = 0x64 // June 4th is the Mouse Day
 let flag = false
 
-const REGISTORY: { [key in RegistoryKey]: number } = {
+export const REGISTORY: { [key in RegistoryKey]: number } = {
   POWER_ON: 0x00,
   POWER_OFF: 0x01,
   READ_ENCODER_L: 0x10,
@@ -31,8 +39,16 @@ const REGISTORY: { [key in RegistoryKey]: number } = {
   WRITE_MOTOR_V_L: 0x30,
   WRITE_MOTOR_V_R: 0x31,
   WHO_AM_I: 0x68,
-  TEST: 0xFF,
-  CALIBRATE: 0xF0,
+  RUN_SEARCH: 0x40,
+  RUN_FAST: 0x41,
+  SHOW_MAZE: 0x50,
+  TEST_STRAIGHT: 0xF0,
+  TEST_SPIN: 0xF1,
+  TEST_SLALOM: 0xF2,
+  TEST_ZIG_ZAG: 0xF3,
+  TEST_CRANK: 0xF4,
+  CALIBRATE: 0xE0,
+  RESET: 0xE1,
 }
 
 interface ConstructorParam extends I2C.ConstructorParam {
@@ -122,8 +138,8 @@ export default class Mouse {
     return this.readByte(REGISTORY.WHO_AM_I)
   }
 
-  public readTest(): number {
-    return this.readByte(REGISTORY.TEST)
+  public writeCommand(key: RegistoryKey): void {
+    this.i2c.write(REGISTORY[key])
   }
 
   public calibrate(): void {
