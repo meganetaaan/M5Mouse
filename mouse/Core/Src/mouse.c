@@ -14,7 +14,7 @@ float clamp(float min, float max, float value) {
 }
 
 // TODO: mouseオブジェクトのインスタンス変数にする
-#define M5_WHEEL_RADIUS 12
+#define M5_WHEEL_RADIUS 12.25f
 #define M5_TREAD_WIDTH 40
 #define M5_MAX_VOLTAGE 6
 #define M5_VBAT (7.4f)
@@ -62,8 +62,7 @@ void m5mouse_update(m5Mouse mouse) {
 
 void m5mouse_update_wallinfo(m5Mouse mouse) {
   mouse->wall = m5wallsensor_update(mouse->sensor);
-  /*
-  if (mouse->wall.front) {
+  if (mouse->wall.left) {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
   } else {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
@@ -73,7 +72,6 @@ void m5mouse_update_wallinfo(m5Mouse mouse) {
   } else {
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
   }
-  */
 }
 
 void m5mouse_update_position(m5Mouse mouse) {
@@ -115,7 +113,7 @@ void m5mouse_update_target_velocity(m5Mouse mouse) {
       mouse->target_velocity = (m5Velocity){0, 0};
       return;
     } else {
-      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+      // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
       // 目標座標と現在位置のエラーを、新しいオドメトリに反映する
       m5Position diff = (m5Position){0.0, 0.0, 0.0};
       // printf("mouse(x, y, theta): (%f, %f, %f)\r\n", mouse->odometry->position.x,
@@ -138,7 +136,11 @@ void m5mouse_update_target_velocity(m5Mouse mouse) {
     }
   }
   mouse->track_target = m5motion_get_next(mouse->motion);
+  // if (mouse->current_velocity.v < 200) {
+  //   mouse->target_velocity = mouse->track_target.velocity;
+  // } else {
   mouse->target_velocity = m5tracking_get_velocity(mouse->odometry->position, mouse->track_target);
+  // }
 }
 
 void m5mouse_update_velocity(m5Mouse mouse) {
@@ -157,11 +159,9 @@ void m5mouse_update_velocity(m5Mouse mouse) {
   // float ang_vel = (vel_l - vel_r) / (2 * PI * M5_TREAD_WIDTH);
   m5gyro_update(mouse->gyro);
   float ang_vel = mouse->gyro->ang_vel;
-  /*
   if (-1.0 < ang_vel && ang_vel < 1.0) {
     ang_vel = 0;
   }
-  */
   ang_vel = to_radians(ang_vel);
   m5Velocity v_meajured = (m5Velocity){vel, ang_vel};
 

@@ -20,8 +20,8 @@ m5MazeAgent m5mazeagent_constructor(m5Maze maze, m5Mouse mouse) {
   agent->_maze = test_maze;
   agent->position = (m5Index){0, 0};
   agent->direction = M5_DIR_NORTH;
-  // agent->curve_mode = M5_CURVE_SLALOM;
-  agent->curve_mode = M5_CURVE_SPIN;
+  agent->curve_mode = M5_CURVE_SLALOM;
+  // agent->curve_mode = M5_CURVE_SPIN;
   agent->curving_velocity = mouse->cap_velocity;
   agent->max_velocity = mouse->cap_velocity;
   agent->straight_count = 0;
@@ -60,7 +60,9 @@ void m5agent_turn_left(m5MazeAgent agent) {
       m5mouse_slalom(agent->mouse, -90, M5_MAZE_WIDTH / 2, v, alpha, omega);
     } else {
       m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v, 0);
+      HAL_Delay(200);
       m5mouse_spin(agent->mouse, -90);
+      HAL_Delay(200);
       m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, 0, v, v);
     }
   }
@@ -78,7 +80,9 @@ void m5agent_turn_right(m5MazeAgent agent) {
       m5mouse_slalom(agent->mouse, 90, M5_MAZE_WIDTH / 2, v, alpha, omega);
     } else {
       m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v, 0);
+      HAL_Delay(200);
       m5mouse_spin(agent->mouse, 90);
+      HAL_Delay(200);
       m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, 0, v, v);
     }
   }
@@ -178,7 +182,7 @@ void m5agent_search_run(m5MazeAgent agent, m5Index goal) {
   uint16_t count = 0;
   agent->straight_count = 0;
   while(agent->state != M5_AGENT_STATE_GOAL) {
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
+    // HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
     if (!m5cell_is_visited(m5agent_get_current_cell(agent))) {
       // m5agent_flush_straight(agent);
       // 壁を測定
