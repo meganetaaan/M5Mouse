@@ -23,6 +23,10 @@ const m5Index M5_DIRECTIONS[4] = {M5_VEC_NORTH, M5_VEC_EAST, M5_VEC_SOUTH,
                                   M5_VEC_WEST};
 
 uint8_t m5cell_is_wall(m5Cell d, uint8_t i) { return d.byte & (0x01 << i); }
+uint8_t m5cell_is_visited(m5Cell d){
+  return d.bits.DoneNorth & d.bits.DoneEast & d.bits.DoneSouth &
+         d.bits.DoneWest;
+}
 uint8_t m5Cell_num_walls(m5Cell d) {
   return d.bits.North + d.bits.East + d.bits.South + d.bits.West;
 }

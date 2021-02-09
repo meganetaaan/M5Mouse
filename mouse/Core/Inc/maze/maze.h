@@ -38,6 +38,7 @@ typedef struct {
 
 // direction
 uint8_t m5cell_is_wall(m5Cell d, uint8_t i);
+uint8_t m5cell_is_visited(m5Cell d);
 uint8_t m5cell_num_walls(m5Cell d);
 
 // queue

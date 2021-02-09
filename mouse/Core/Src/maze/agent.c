@@ -21,6 +21,8 @@ m5MazeAgent m5mazeagent_constructor(m5Maze maze, m5Mouse mouse) {
   agent->position = (m5Index){0, 0};
   agent->direction = M5_DIR_NORTH;
   agent->curve_mode = M5_CURVE_SLALOM;
+  agent->curving_velocity = mouse->cap_velocity;
+  agent->max_velocity = mouse->cap_velocity;
   return agent;
 }
 
@@ -30,19 +32,25 @@ void m5agent_advance(m5MazeAgent agent) {
   agent->position.y = agent->position.y + dir.y;
 }
 
-void m5agent_straight(m5MazeAgent agent) {
-  float v = agent->mouse->cap_velocity.v;
-  if (agent->mouse) {
-    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH, v, v, v);
+void m5agent_go_forward(m5MazeAgent agent, uint8_t force) {
+  if (force) {
+    float v = agent->mouse->cap_velocity.v;
+    if (agent->mouse) {
+      m5mouse_straight(agent->mouse, M5_MAZE_WIDTH, v, v, v);
+    }
+    agent->straight_count = 0;
+  } else {
+    agent->straight_count += 1;
   }
   m5agent_advance(agent);
 }
 
 void m5agent_turn_left(m5MazeAgent agent) {
-  float v = agent->mouse->cap_velocity.v;
+  float v = agent->curving_velocity.v;
   float alpha = agent->mouse->cap_accel.alpha;
   float omega = agent->mouse->cap_velocity.omega;
   if (agent->mouse) {
+    m5agent_flush_straight(agent);
     if (agent->curve_mode == M5_CURVE_SLALOM) {
       m5mouse_slalom(agent->mouse, -90, M5_MAZE_WIDTH / 2, v, alpha, omega);
     } else {
@@ -56,10 +64,11 @@ void m5agent_turn_left(m5MazeAgent agent) {
 }
 
 void m5agent_turn_right(m5MazeAgent agent) {
-  float v = agent->mouse->cap_velocity.v;
+  float v = agent->curving_velocity.v;
   float alpha = agent->mouse->cap_accel.alpha;
   float omega = agent->mouse->cap_velocity.omega;
   if (agent->mouse) {
+    m5agent_flush_straight(agent);
     if (agent->curve_mode == M5_CURVE_SLALOM) {
       m5mouse_slalom(agent->mouse, 90, M5_MAZE_WIDTH / 2, v, alpha, omega);
     } else {
@@ -72,11 +81,20 @@ void m5agent_turn_right(m5MazeAgent agent) {
   m5agent_advance(agent);
 }
 
-void m5agent_turn_back(m5MazeAgent agent, uint8_t adjust) {
-  float v = agent->mouse->cap_velocity.v;
+void m5agent_flush_straight(m5MazeAgent agent) {
+  float v = agent->curving_velocity.v;
+  float vmax = agent->max_velocity.v;
+  if (agent->straight_count > 0) {
+    m5mouse_straight(agent->mouse, M5_MAZE_WIDTH * agent->straight_count, v, vmax, v);
+    agent->straight_count = 0;
+  }
+}
+
+void m5agent_go_backward(m5MazeAgent agent, uint8_t adjust) {
+  float v = agent->curving_velocity.v;
   if (agent->mouse) {
+    m5agent_flush_straight(agent);
     if (adjust) {
-    // if (0) {
       m5mouse_straight(agent->mouse, M5_MAZE_WIDTH / 2, v, v, 0);
       m5mouse_spin(agent->mouse, 180);
       m5mouse_straight(agent->mouse, -M5_MAZE_WIDTH / 2 + 5, 0, v, 0);
@@ -87,6 +105,10 @@ void m5agent_turn_back(m5MazeAgent agent, uint8_t adjust) {
   }
   agent->direction = (agent->direction + 2) % 4;
   m5agent_advance(agent);
+}
+
+m5Cell m5agent_get_current_cell(m5MazeAgent agent) {
+  return agent->maze->wall[agent->position.y][agent->position.x];
 }
 
 m5Cell m5agent_get_wall(m5MazeAgent agent) {
@@ -147,27 +169,31 @@ void m5agent_search_run(m5MazeAgent agent, m5Index goal) {
 
   // ゴールまで繰り返し
   uint16_t count = 0;
+  uint8_t straight_count = 0;
   while(agent->state != M5_AGENT_STATE_GOAL) {
-    // 壁を測定
-    m5Cell wall = m5agent_get_wall(agent);
-    // 迷路をアップデート
-    m5maze_set_wall(maze, agent->position, &wall);
-    m5maze_update_step_map(maze, agent->goal);
+    if (!m5cell_is_visited(m5agent_get_current_cell(agent))) {
+      m5agent_flush_straight(agent);
+      // 壁を測定
+      m5Cell wall = m5agent_get_wall(agent);
+      // 迷路をアップデート
+      m5maze_set_wall(maze, agent->position, &wall);
+    }
     // 次の進路を決定
+    m5maze_update_step_map(maze, agent->goal);
     m5Direction next_dir = m5agent_get_next_direction(agent);
     uint8_t adjust;
     // 進む
     switch (next_dir) {
       case M5_DIR_FORWARD:
-        m5agent_straight(agent);
+        m5agent_go_forward(agent, 0);
         break;
       case M5_DIR_RIGHT:
         m5agent_turn_right(agent);
         break;
       case M5_DIR_BACKWARD:
         // 進行方向に壁があれば背面調整をする
-        adjust = m5cell_is_wall(wall, agent->direction);
-        m5agent_turn_back(agent, adjust);
+        adjust = m5cell_is_wall(m5agent_get_current_cell(agent), agent->direction);
+        m5agent_go_backward(agent, adjust);
         break;
       case M5_DIR_LEFT:
         m5agent_turn_left(agent);

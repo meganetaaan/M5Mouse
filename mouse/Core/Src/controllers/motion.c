@@ -146,6 +146,7 @@ m5Motion m5motion_constructor(m5MotionType type, m5Velocity start_velocity,
   motion->type = type;
   motion->destination = destination;
   m5motion_reset(motion);
+  motion->on_ended = NULL;
   return motion;
 }
 

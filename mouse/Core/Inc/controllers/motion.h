@@ -47,6 +47,7 @@ typedef struct {
   size_t n2;
   size_t n3;
   uint8_t is_end;
+  void(*on_ended)();
 } m5MotionRecord, *m5Motion;
 
 typedef m5Queue m5MotionQueue;

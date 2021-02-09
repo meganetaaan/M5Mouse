@@ -1,4 +1,5 @@
 #include "common/queue.h"
+#include <stdlib.h>
 
 m5Queue m5queue_constructor() {
   m5Queue queue = malloc(sizeof(m5QueueRecord));
