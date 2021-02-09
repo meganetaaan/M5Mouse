@@ -11,8 +11,8 @@
 
 #define M5_PULSE_PER_ROTATE (4096 * 4 * 5)
 #define M5_BODY_WIDTH 54
-#define M5_WALL_ADJUST_GAIN (0.005f)
-#define M5_WALL_ERROR_UPDATE_GAIN (0.02f)
+#define M5_WALL_ADJUST_GAIN (0.02f)
+#define M5_WALL_ERROR_UPDATE_GAIN (0.01f)
 
 typedef struct {
   m5Motion motion;
