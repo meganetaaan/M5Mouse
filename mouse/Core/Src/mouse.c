@@ -15,7 +15,7 @@ float clamp(float min, float max, float value) {
 
 // TODO: mouseオブジェクトのインスタンス変数にする
 #define M5_WHEEL_RADIUS 12
-#define M5_TREAD_WIDTH 42
+#define M5_TREAD_WIDTH 40
 #define M5_MAX_VOLTAGE 6
 #define M5_VBAT (7.4f)
 
@@ -62,7 +62,8 @@ void m5mouse_update(m5Mouse mouse) {
 
 void m5mouse_update_wallinfo(m5Mouse mouse) {
   mouse->wall = m5wallsensor_update(mouse->sensor);
-  if (mouse->wall.left) {
+  /*
+  if (mouse->wall.front) {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
   } else {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
@@ -72,6 +73,7 @@ void m5mouse_update_wallinfo(m5Mouse mouse) {
   } else {
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
   }
+  */
 }
 
 void m5mouse_update_position(m5Mouse mouse) {
@@ -87,6 +89,11 @@ void m5mouse_update_position(m5Mouse mouse) {
       // wall_error = (mouse->wall.right_error - mouse->wall.left_error) * 2;
     }
     mouse->wall_error = mouse->wall_error * (1.0f * M5_WALL_ERROR_UPDATE_GAIN) + wall_error * M5_WALL_ERROR_UPDATE_GAIN;
+    if (mouse->wall_error < -3000.0) {
+      mouse->wall_error = -3000.0;
+    } else if (mouse->wall_error > 3000.0) {
+      mouse->wall_error = 3000.0;
+    }
     mouse->odometry->position.x = mouse->odometry->position.x + wall_error * M5_WALL_ADJUST_GAIN;
   } else {
     mouse->wall_error = 0;
@@ -108,6 +115,7 @@ void m5mouse_update_target_velocity(m5Mouse mouse) {
       mouse->target_velocity = (m5Velocity){0, 0};
       return;
     } else {
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
       // 目標座標と現在位置のエラーを、新しいオドメトリに反映する
       m5Position diff = (m5Position){0.0, 0.0, 0.0};
       // printf("mouse(x, y, theta): (%f, %f, %f)\r\n", mouse->odometry->position.x,
@@ -127,7 +135,6 @@ void m5mouse_update_target_velocity(m5Mouse mouse) {
       mouse->motion = m5motionqueue_dequeue(mouse->motion_queue);
       m5odometry_reset(mouse->odometry);
       mouse->odometry->position = diff;
-      // mouse->count = 0;
     }
   }
   mouse->track_target = m5motion_get_next(mouse->motion);
@@ -174,6 +181,9 @@ void m5mouse_straight(m5Mouse mouse, float distance, float start_velocity, float
                            mouse->cap_accel, M5_TARGET_FREQUENCY);
   motion->on_ended = m5mouse_default_on_motion_ended;
   m5motionqueue_enqueue( mouse->motion_queue, motion);
+  while(!m5queue_is_empty(mouse->motion_queue) || m5mouse_is_moving(mouse)) {
+    // XXX: BUSY WAIT
+  }
   return;
 }
 
@@ -184,6 +194,9 @@ void m5mouse_spin(m5Mouse mouse, float degrees) {
                            M5_TARGET_FREQUENCY);
   motion->on_ended = m5mouse_default_on_motion_ended;
   m5motionqueue_enqueue(mouse->motion_queue, motion);
+  while(!m5queue_is_empty(mouse->motion_queue) || m5mouse_is_moving(mouse)) {
+    // XXX: BUSY WAIT
+  }
   return;
 }
 
@@ -200,4 +213,7 @@ void m5mouse_slalom(m5Mouse mouse, float degrees, float r, float const_velocity,
   m5Motion motion = m5motion_constructor(M5_SLALOM, start, max, end, destination, a, M5_TARGET_FREQUENCY);
   motion->on_ended = m5mouse_default_on_motion_ended;
   m5motionqueue_enqueue(mouse->motion_queue, motion);
+  while(!m5queue_is_empty(mouse->motion_queue) || m5mouse_is_moving(mouse)) {
+    // XXX: BUSY WAIT
+  }
 }

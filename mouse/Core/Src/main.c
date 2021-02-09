@@ -178,6 +178,7 @@ int main(void) {
           break;
         case M5_REGISTER_RUN_SEARCH:
           mouse->cap_velocity = (m5Velocity){M5_VELOCITY_SEARCH, M5_ANG_VELOCITY};
+          HAL_Delay(500);
           m5agent_search_run(agent, (m5Index){7, 8});
           break;
         case M5_REGISTER_RUN_FAST:
@@ -216,9 +217,11 @@ int main(void) {
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
+          HAL_Delay(500);
           m5test_calibrate(mouse);
+          HAL_Delay(500);
+          m5test_calibrate_wall(mouse);
           mouse->is_wall_adjust_enabled = 1;
-          HAL_Delay(300);
           break;
         default:
           m5i2cbuffer[0] = 0xFF;
@@ -788,7 +791,7 @@ void m5main_init_mouse(void) {
   mouse->target_velocity = (m5Velocity){0, 0};
   mouse->cap_velocity = (m5Velocity){M5_VELOCITY_SEARCH, M5_ANG_VELOCITY};
   mouse->cap_accel = (m5Accel){M5_ACCEL_SEARCH, M5_ANG_ACCEL};
-  mouse->is_wall_adjust_enabled = 0;
+  mouse->is_wall_adjust_enabled = 1;
   mouse->odometry = m5odometry_constructor(M5_DELTA);
 }
 

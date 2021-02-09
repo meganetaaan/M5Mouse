@@ -10,7 +10,7 @@
 // #define M5_TRACKING_GAIN_Y (0.01f)
 #define M5_TRACKING_GAIN_THETA (0.95 * 0.1f)
 #define M5_TRACKING_GAIN_X (M5_TRACKING_GAIN_THETA * M5_TRACKING_GAIN_THETA / 4)
-#define M5_TRACKING_GAIN_Y (50.0f)
+#define M5_TRACKING_GAIN_Y (0.01f)
 
 m5Velocity m5tracking_get_velocity(m5Position pos, m5TrackTarget target);
 
