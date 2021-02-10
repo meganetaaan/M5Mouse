@@ -40,10 +40,13 @@ void m5odometry_update(m5Odometry odo, m5Velocity v) {
     odo->initialized = 1;
   }
 
-  odo->x += ((dx + odo->prev_dx) / 2) * odo->delta;
-  odo->y += ((dy + odo->prev_dy) / 2) * odo->delta;
-  odo->position.x = (float)odo->x;
-  odo->position.y = (float)odo->y;
+  odo->position.x += ((dx + odo->prev_dx) / 2) * odo->delta;
+  odo->position.y += ((dy + odo->prev_dy) / 2) * odo->delta;
+
+  // odo->x += ((dx + odo->prev_dx) / 2) * odo->delta;
+  // odo->y += ((dy + odo->prev_dy) / 2) * odo->delta;
+  // odo->position.x = (float)odo->x;
+  // odo->position.y = (float)odo->y;
   odo->position.theta += (v.omega + odo->prev_omega) / 2 * odo->delta;
 
   odo->prev_dx = dx;

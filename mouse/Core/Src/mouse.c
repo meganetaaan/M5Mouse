@@ -77,6 +77,7 @@ void m5mouse_update_wallinfo(m5Mouse mouse) {
 void m5mouse_update_position(m5Mouse mouse) {
   m5odometry_update(mouse->odometry, mouse->current_velocity);
   // 壁センサの誤差を使って位置を補正する
+  /*
   if (mouse->is_wall_adjust_enabled && mouse->motion != NULL &&
       mouse->motion->type == M5_STRAIGHT &&
       (mouse->wall.left || mouse->wall.right)) {
@@ -96,6 +97,7 @@ void m5mouse_update_position(m5Mouse mouse) {
   } else {
     mouse->wall_error = 0;
   }
+  */
 }
 
 uint8_t m5mouse_is_moving(m5Mouse mouse) {
@@ -139,8 +141,29 @@ void m5mouse_update_target_velocity(m5Mouse mouse) {
   // if (mouse->current_velocity.v < 200) {
   //   mouse->target_velocity = mouse->track_target.velocity;
   // } else {
-  mouse->target_velocity = m5tracking_get_velocity(mouse->odometry->position, mouse->track_target);
-  // }
+  m5Position pos = mouse->odometry->position;
+  // 壁センサの誤差を使って位置を補正する
+  if (mouse->is_wall_adjust_enabled && mouse->motion != NULL &&
+      mouse->motion->type == M5_STRAIGHT &&
+      (mouse->wall.left || mouse->wall.right)) {
+    float wall_error = 0;
+    if (mouse->wall.right && mouse->wall.left) {
+      wall_error = (mouse->wall.right_error - mouse->wall.left_error);
+    } else {
+      // wall_error = (mouse->wall.right_error - mouse->wall.left_error) * 2;
+      mouse->wall_error = 0;
+    }
+    mouse->wall_error = mouse->wall_error * (1.0f * M5_WALL_ERROR_UPDATE_GAIN) + wall_error * M5_WALL_ERROR_UPDATE_GAIN;
+    if (mouse->wall_error < -500.0) {
+      mouse->wall_error = -300.0;
+    } else if (mouse->wall_error > 300.0) {
+      mouse->wall_error = 300.0;
+    }
+    pos.x = pos.x + wall_error * M5_WALL_ADJUST_GAIN;
+  } else {
+    mouse->wall_error = 0;
+  }
+  mouse->target_velocity = m5tracking_get_velocity(pos, mouse->track_target);
 }
 
 void m5mouse_update_velocity(m5Mouse mouse) {
