@@ -1,11 +1,12 @@
 #include <stm32f4xx_hal.h>
 #include "test.h"
 #include "global.h"
+#include "maze/agent.h"
 
 void m5test_straight(m5Mouse mouse) {
   HAL_Delay(300);
   float v = mouse->cap_velocity.v;
-  m5mouse_straight(mouse, 1000, 0, v, 0);
+  m5mouse_straight(mouse, M5_MAZE_WIDTH * 8, 0, v, 0);
   m5mouse_spin(mouse, 180);
 }
 

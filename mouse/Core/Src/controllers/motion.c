@@ -40,19 +40,21 @@ void m5trapezoid_reset(m5Trapezoid tr) {
   tr->count = 0;
 }
 float m5trapezoid_get_next(m5Trapezoid tr) {
-  tr->count += 1;
+  float v;
   size_t count = tr->count;
-  if (tr->count < tr->t1) {
-    return tr->start_velocity + (count * tr->accel * tr->delta);
+  if (count < tr->t1) {
+    v = tr->start_velocity + (count * tr->accel * tr->delta);
   } else if (count < tr->t2) {
-    return tr->max_velocity;
+    v = tr->max_velocity;
   } else if (count < tr->t3) {
     size_t c = tr->t3 - count;
-    return tr->end_velocity + (c * tr->accel * tr->delta);
+    v = tr->end_velocity + (c * tr->accel * tr->delta);
   } else {
     tr->is_end = 1;
-    return tr->end_velocity;
+    v = tr->end_velocity;
   }
+  tr->count += 1;
+  return v;
 }
 
 m5Motion m5motionqueue_dequeue(m5MotionQueue queue) {

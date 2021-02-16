@@ -7,6 +7,8 @@
 
 typedef struct {
   m5Position position;
+  double x;
+  double y;
   float prev_dx;
   float prev_dy;
   float prev_omega;

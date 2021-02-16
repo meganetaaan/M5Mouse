@@ -1,7 +1,6 @@
 #include "controllers/tracking.h"
 
 m5Velocity m5tracking_get_velocity(m5Position pos, m5TrackTarget target) {
-  // if (1) {
   if (target.type == M5_SPIN || target.type == M5_NONE) {
     // その場に留まって動いてほしいので、追従制御はしない。
     return target.velocity;

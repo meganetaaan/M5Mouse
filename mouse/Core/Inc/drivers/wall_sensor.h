@@ -2,9 +2,12 @@
 #define _M5_DRIVER_WALL_SENSOR_H_
 #include "sensor.h"
 
-#define M5_WALL_THRESH_L (780)
-#define M5_WALL_THRESH_F (540)
-#define M5_WALL_THRESH_R (1050)
+// #define M5_WALL_THRESH_L (780)
+// #define M5_WALL_THRESH_F (550)
+// #define M5_WALL_THRESH_R (1050)
+#define M5_WALL_THRESH_L (740)
+#define M5_WALL_THRESH_F (570)
+#define M5_WALL_THRESH_R (1010)
 #define M5_WALL_COUNT (2)
 #define M5_WALL_OFFSET_COUNT (100)
 

@@ -19,10 +19,10 @@
 #define M5_TARGET_FREQUENCY (1000.0f)
 #define M5_DELTA (1.0f / M5_FREQUENCY)
 #define M5_CELL_WIDTH (180.0f)
-#define M5_VELOCITY_SEARCH (280)
-#define M5_ACCEL_SEARCH (900)
-#define M5_ANG_VELOCITY (6 * PI)
-#define M5_ANG_ACCEL (9 * PI)
+#define M5_VELOCITY_SEARCH (400)
+#define M5_ACCEL_SEARCH (800)
+#define M5_ANG_VELOCITY (8 * PI)
+#define M5_ANG_ACCEL (14 * PI)
 
 extern m5MouseRecord m5mouseRecord;
 extern m5Mouse mouse;

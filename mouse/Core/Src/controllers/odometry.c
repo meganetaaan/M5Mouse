@@ -2,16 +2,7 @@
 #include <stm32f405xx.h>
 #include <arm_math.h>
 
-#include "common/geometry.h"
-
-typedef struct {
-  m5Position position;
-  float prev_dx;
-  float prev_dy;
-  float prev_omega;
-  float delta;
-  uint8_t initialized;
-} m5OdometryRecord, *m5Odometry;
+#include "controllers/odometry.h"
 
 m5Odometry m5odometry_constructor(float delta) {
   m5Odometry odo = malloc(sizeof(m5OdometryRecord));
@@ -21,6 +12,8 @@ m5Odometry m5odometry_constructor(float delta) {
   odo->prev_dx = 0;
   odo->prev_dy = 0;
   odo->prev_omega = 0;
+  odo->x = 0;
+  odo->y = 0;
   return odo;
 }
 
@@ -49,6 +42,11 @@ void m5odometry_update(m5Odometry odo, m5Velocity v) {
 
   odo->position.x += ((dx + odo->prev_dx) / 2) * odo->delta;
   odo->position.y += ((dy + odo->prev_dy) / 2) * odo->delta;
+
+  // odo->x += ((dx + odo->prev_dx) / 2) * odo->delta;
+  // odo->y += ((dy + odo->prev_dy) / 2) * odo->delta;
+  // odo->position.x = (float)odo->x;
+  // odo->position.y = (float)odo->y;
   odo->position.theta += (v.omega + odo->prev_omega) / 2 * odo->delta;
 
   odo->prev_dx = dx;
@@ -57,6 +55,8 @@ void m5odometry_update(m5Odometry odo, m5Velocity v) {
 }
 
 void m5odometry_reset(m5Odometry odo) {
+  odo->x = 0;
+  odo->y = 0;
   odo->position = (m5Position) {0.0, 0.0, 0.0};
   odo->prev_dx = 0.0;
   odo->prev_dy = 0.0;

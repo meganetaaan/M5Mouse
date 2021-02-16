@@ -38,6 +38,7 @@
 #include "test.h"
 
 #include "controllers/motion.h"
+#include "controllers/tracking.h"
 #include "maze/agent.h"
 #include "maze/maze.h"
 #include "maze/maze_data.h"
@@ -151,6 +152,7 @@ int main(void) {
   // 開始
   m5main_init_mouse();
   m5mouse_start(mouse);
+  // mouse->active = 0;
 
   // 割り込みハンドラの開始
   HAL_TIM_Base_Start_IT(&htim7);
@@ -160,6 +162,33 @@ int main(void) {
   HAL_Delay(500);
   // m5mouse_slalom(mouse, 90, mouse->cap_velocity.v, mouse->cap_accel.alpha, mouse->cap_velocity.omega);
 
+/*
+  m5Motion straight = m5motion_constructor(M5_STRAIGHT, (m5Velocity){0, 0}, (m5Velocity){400, 0}, (m5Velocity){0, 0}, (m5Position){0, M5_MAZE_WIDTH * 8, 0}, (m5Accel){800, 0}, 1000);
+  size_t count = 0;
+  m5Odometry odo = m5odometry_constructor(M5_DELTA);
+  odo->position = (m5Position){20, 0, 0};
+  m5Velocity current_velocity = (m5Velocity){0, 0};
+  m5Velocity prev_velocity = (m5Velocity){0, 0};
+  m5TrackTarget  target;
+  while (!straight->is_end) {
+    current_velocity = m5v_add(m5v_mul(current_velocity, 0.9), m5v_mul(prev_velocity, 0.1));
+    m5odometry_update(odo, current_velocity);
+    target = m5motion_get_next(straight);
+    m5Velocity v = m5tracking_get_velocity(odo->position, target);
+    m5Position pos = odo->position;
+    if (count % 20 == 0) {
+      printf("time: %d, odo: (%f, %f, %f), target: (%f, %f, %f)\r\n", count, pos.x, pos.y, pos.theta, target.position.x, target.position.y, target.position.theta);
+    }
+    prev_velocity = v;
+    count++;
+  }
+  m5Position pos = odo->position;
+  printf("time: %d, odo: (%f, %f, %f), target: (%f, %f, %f)\r\n", count, pos.x, pos.y, pos.theta, target.position.x, target.position.y, target.position.theta);
+  while (1) {
+    // hoge
+  }
+
+*/
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -178,6 +207,7 @@ int main(void) {
           break;
         case M5_REGISTER_RUN_SEARCH:
           mouse->cap_velocity = (m5Velocity){M5_VELOCITY_SEARCH, M5_ANG_VELOCITY};
+          HAL_Delay(500);
           m5agent_search_run(agent, (m5Index){7, 8});
           break;
         case M5_REGISTER_RUN_FAST:
@@ -216,9 +246,11 @@ int main(void) {
           HAL_Delay(300);
           break;
         case M5_REGISTER_CALIBRATE:
+          HAL_Delay(500);
           m5test_calibrate(mouse);
+          HAL_Delay(500);
+          m5test_calibrate_wall(mouse);
           mouse->is_wall_adjust_enabled = 1;
-          HAL_Delay(300);
           break;
         default:
           m5i2cbuffer[0] = 0xFF;
@@ -788,7 +820,7 @@ void m5main_init_mouse(void) {
   mouse->target_velocity = (m5Velocity){0, 0};
   mouse->cap_velocity = (m5Velocity){M5_VELOCITY_SEARCH, M5_ANG_VELOCITY};
   mouse->cap_accel = (m5Accel){M5_ACCEL_SEARCH, M5_ANG_ACCEL};
-  mouse->is_wall_adjust_enabled = 0;
+  mouse->is_wall_adjust_enabled = 1;
   mouse->odometry = m5odometry_constructor(M5_DELTA);
 }
 
